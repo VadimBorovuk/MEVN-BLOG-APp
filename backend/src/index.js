@@ -32,13 +32,20 @@ app.use('/api/blogs', blogRoutes)
 // }
 
 if (process.env.NODE_ENV === "production") {
-  // Сервіруємо статичні файли фронтенду
+  // Сервіруємо статичні файли з папки frontend/dist
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-  // Всі інші GET-запити, що не були оброблені, відправляємо на index.html
-  // Це дозволяє Vue.js/Vite правильно обробляти клієнтські маршрути
-  app.get("/*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+  // Цей маршрут буде обробляти ВСІ GET-запити, які не були оброблені вище
+  // (тобто не /api/blogs). Це дозволить вашому односторінковому додатку
+  // працювати коректно, адже Vue.js буде відповідати за маршрутизацію
+  // на стороні клієнта.
+  app.use((req, res, next) => {
+    // Якщо запит не до API, віддаємо файл index.html
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+    } else {
+      next(); // Продовжуємо, якщо запит до API
+    }
   });
 }
 
