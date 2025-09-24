@@ -1,9 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import blogRoutes from "../routes/blog.routes.js";
 import path from "path";
 dotenv.config();
+
+import blogRoutes from "../routes/blog.routes.js";
 
 const PORT = process.env.PORT || 3333;
 const __dirname = path.resolve();
@@ -17,7 +18,6 @@ app.use(
 );
 
 app.use('/api/blogs', blogRoutes)
-
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
