@@ -19,17 +19,28 @@ app.use(
 
 app.use('/api/blogs', blogRoutes)
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
-  });
-}
+// if (process.env.NODE_ENV === "production") {
+//   app.use(express.static(path.join(__dirname, "../frontend/dist")));
+//
+//   app.get("*", (req, res) => {
+//     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+//   });
+// }
 
 // if (process.env.NODE_ENV === "production") {
 //   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 // }
+
+if (process.env.NODE_ENV === "production") {
+  // Сервіруємо статичні файли фронтенду
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+  // Всі інші GET-запити, що не були оброблені, відправляємо на index.html
+  // Це дозволяє Vue.js/Vite правильно обробляти клієнтські маршрути
+  app.get("/*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+  });
+}
 
 app.listen(PORT,()=>{
   console.log(`PORT listen on http://localhost:${PORT}`)
