@@ -6,7 +6,7 @@
 
     <ul v-else>
       <li v-for="blog in blogs" :key="blog._id" style="border: 3px solid; padding: 10px; margin-bottom: 10px">
-        <router-link :to="`/blogs/${blog._id}`" v-if="authUserStore.authUser._id === blog.userId._id">
+        <router-link :to="`/blogs/${blog._id}`" v-if="authUserStore.authUser?._id === blog.userId?._id">
           {{ blog.title }} - {{ blog.content }} - {{ blog.userId.fullName }}
         </router-link>
         <span v-else>
@@ -34,22 +34,16 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import {axiosInstance} from "../utils/axios.ts";
-import {useAuthStore} from "../stores/authStore.ts";
+import {type TypeAuthUser, useAuthStore} from "../stores/authStore.ts";
 
-type TypeUser = {
-  _id?: string
-  fullName: string
-  email: string
-  password: string
-}
 
 type TypeLike = {
-  userId: TypeUser
+  userId: TypeAuthUser
 }
 
 type TypeComment = {
   _id: number
-  userId: TypeUser
+  userId: TypeAuthUser
   content: string
   likes: TypeLike[]
   createdAt: Date
@@ -57,7 +51,7 @@ type TypeComment = {
 
 interface IBlog {
   _id: number
-  userId: TypeUser
+  userId: TypeAuthUser
   title: string
   content: string
   comments: TypeComment[]
@@ -75,6 +69,7 @@ const fetchBlogs = async () => {
     const res = await axiosInstance.get<IBlog[]>("/blogs");
     blogs.value = res.data
   } catch (e) {
+    blogs.value = []
     console.log(e)
   } finally {
     isLoading.value = false

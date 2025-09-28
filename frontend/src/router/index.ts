@@ -4,6 +4,7 @@ import BlogsView from "../views/Blogs.vue";
 import ProfileView from "../views/Profile.vue";
 import BlogsInfoView from "../views/BlogsInfo.vue";
 import {useAuthStore} from "../stores/authStore.ts";
+import Signup from "../views/Signup.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -22,12 +23,18 @@ const routes: Array<RouteRecordRaw> = [
     path: '/profile',
     name: 'profile',
     component: ProfileView,
-    meta: { requiresAuth: false }
+    meta: { requiresAuth: true }
   },
   {
     path: '/login',
     name: 'login',
     component: LoginView,
+    meta: { guestOnly: true }
+  },
+  {
+    path: '/signup',
+    name: 'signup',
+    component: Signup,
     meta: { guestOnly: true }
   },
 ]
@@ -37,10 +44,10 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore();
 
-  // перевіряємо чи користувач вже авторизований
+  // якщо ще не перевіряли авторизацію — робимо перевірку
   if (!authStore.isChecked) {
     await authStore.checkAuth();
   }
@@ -55,5 +62,6 @@ router.beforeEach(async (to, from, next) => {
 
   next();
 });
+
 
 export default router

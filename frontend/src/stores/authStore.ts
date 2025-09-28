@@ -2,16 +2,16 @@ import {defineStore} from 'pinia'
 import {ref} from "vue";
 import {getAuthCheck, loginAuth, signupAuth} from "../api/authApi.ts";
 import type {AxiosResponse} from "axios";
+import type { Router } from "vue-router";
 
-type TypeAuthUser = {
+export type TypeAuthUser = {
   _id?: string
   fullName?: string
   email?: string
   password?: string
   token?: string
+  profilePic?: string
 }
-
-
 
 export const useAuthStore = defineStore('authUser', () => {
   const authUser = ref<TypeAuthUser | null>(null);
@@ -25,7 +25,7 @@ export const useAuthStore = defineStore('authUser', () => {
       const res = await getAuthCheck();
       authUser.value = res.data
     } catch (error) {
-      console.log("Error in checkAuth:", error);
+      console.log(error);
       authUser.value = null;
     } finally {
       isCheckingAuth.value = false;
@@ -33,12 +33,14 @@ export const useAuthStore = defineStore('authUser', () => {
     }
   }
 
-  const login = async (data, router) => {
+  const login = async (data: TypeAuthUser, router: Router) => {
     isLoggingIn.value = true;
     try {
       const res: AxiosResponse<TypeAuthUser> = await loginAuth(data);
       authUser.value = res.data;
-      localStorage.setItem('token', res.data.token);
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+      }
       router.push("/")
     } catch (e) {
       console.log(e)
@@ -47,12 +49,14 @@ export const useAuthStore = defineStore('authUser', () => {
     }
   }
 
-  const signup = async (data, router) => {
+  const signup = async (data: TypeAuthUser, router: Router) => {
     isSigningUp.value = true;
     try {
       const res: AxiosResponse<TypeAuthUser> = await signupAuth(data);
       authUser.value = res.data;
-      localStorage.setItem('token', res.data.token)
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+      }
       router.push({path: '/'})
     } catch (e) {
       console.log(e)
@@ -61,7 +65,7 @@ export const useAuthStore = defineStore('authUser', () => {
     }
   }
 
-  const logout = async (router) => {
+  const logout = async (router: Router) => {
     authUser.value = null;
     localStorage.removeItem("token");
     router.push({path: '/login'})
@@ -69,6 +73,10 @@ export const useAuthStore = defineStore('authUser', () => {
 
   return {
     authUser,
+    isSigningUp,
+    isLoggingIn,
+    isCheckingAuth,
+    isChecked,
     checkAuth,
     logout,
     login,
@@ -77,4 +85,4 @@ export const useAuthStore = defineStore('authUser', () => {
 })
 
 
-// "build": "vue-tsc -b && vite build",
+

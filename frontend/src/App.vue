@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="bg-violet-200">
     <div style="display: flex; align-items: center">
       <h1 class="mr-3 text-4xl">App MEVN Blog</h1>
-<!--      <h2 class="text-2xl">{{ authUserStore.authUser.fullName }}</h2>-->
+      <h2 v-if="authUserStore.authUser" class="text-2xl">{{ userFullName }}</h2>
 
       <button @click="() => authUserStore.logout(router)">Logout</button>
     </div>
@@ -20,9 +20,11 @@
 <script setup lang="ts">
 import {useAuthStore} from "./stores/authStore.ts";
 import {useRouter} from "vue-router";
+import {computed} from "vue";
 const router = useRouter()
 const authUserStore = useAuthStore()
 
+const userFullName = computed(() => authUserStore.authUser?.fullName ?? "");
 </script>
 
 <style scoped>

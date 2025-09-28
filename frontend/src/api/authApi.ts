@@ -1,4 +1,5 @@
 import {axiosInstance} from "../utils/axios.ts";
+import type {TypeAuthUser} from "../stores/authStore.ts";
 
 export function getAuthCheck() {
   return axiosInstance({
@@ -7,7 +8,7 @@ export function getAuthCheck() {
   })
 }
 
-export function loginAuth(data) {
+export function loginAuth(data: TypeAuthUser) {
   return axiosInstance({
     url: `/auth/login`,
     method: 'post',
@@ -15,7 +16,7 @@ export function loginAuth(data) {
   })
 }
 
-export function signupAuth(data) {
+export function signupAuth(data: TypeAuthUser) {
   return axiosInstance({
     url: `/auth/signup`,
     method: 'post',

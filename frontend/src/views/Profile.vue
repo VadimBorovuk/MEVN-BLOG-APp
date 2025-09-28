@@ -2,7 +2,7 @@
   <div>
 
     <img
-        :src="selectedImg || authUserStore.authUser.profilePic || '/avatar.png'"
+        :src="selectedImg || authUserStore?.authUser?.profilePic || '/avatar.png'"
         alt="Profile"
     />
     <input
@@ -38,11 +38,9 @@ const handleImageUpload = async (e: any) => {
 };
 
 const updateProfile = async (data: any) => {
-  console.log(data)
   try {
-
-   await axiosInstance.put("/auth/update_profile", data);
-    authUserStore.authUser.value = res.data
+    const res = await axiosInstance.put("/auth/update_profile", data);
+    authUserStore.authUser = res.data
     console.log('updated')
   } catch (e) {
     console.log(e)

@@ -3,6 +3,19 @@
     <form @submit=handleSubmit class="space-y-6">
       <div class="form-control">
         <label class="label">
+          <span class="label-text font-medium">FullName</span>
+        </label>
+        <div class="relative">
+          <input
+              v-model="formData.fullName"
+              type="text"
+              placeholder="Don Jon"
+          />
+        </div>
+      </div>
+
+      <div class="form-control">
+        <label class="label">
           <span class="label-text font-medium">Email</span>
         </label>
         <div class="relative">
@@ -28,7 +41,7 @@
       </div>
 
       <div>
-        <router-link to="/signup">to signup</router-link>
+        <router-link to="/login">to login</router-link>
       </div>
 
       <button type="submit" class="btn btn-primary w-full">
@@ -42,7 +55,6 @@
 import {useAuthStore} from "../stores/authStore.ts";
 import {ref} from "vue";
 import {useRouter} from "vue-router";
-import Signup from "./Signup.vue";
 const router = useRouter()
 
 const formData = ref({})
@@ -50,7 +62,7 @@ const formData = ref({})
 const authUserStore = useAuthStore();
 const handleSubmit = async (e) => {
   e.preventDefault();
-  const res = await authUserStore.login(formData.value, router);
+  const res = await authUserStore.signup(formData.value, router);
 }
 </script>
 
