@@ -1,0 +1,30 @@
+//link to source: https://dbdiagram.io/d/68d3ea91d2b621e422ba8180
+
+Table users {
+  id integer [primary key]
+  username varchar
+  role varchar
+  created_at timestamp
+}
+
+Table blogs {
+  id integer [primary key]
+  title varchar
+  body text [note: 'Content of the post']
+  user_id integer [not null]
+  status varchar
+  created_at timestamp
+}
+
+Table comments {
+  id integer [primary key]
+  content text
+  user_id integer [not null] // хто написав
+  blog_id integer [not null] // до якого блогу
+  created_at timestamp
+}
+
+Ref user_blogs: blogs.user_id > users.id // many-to-one
+
+Ref comments_user: comments.user_id > users.id   // many-to-one (user → comments)
+Ref comments_blog: comments.blog_id > blogs.id   // many-to-one (blog → comments)
