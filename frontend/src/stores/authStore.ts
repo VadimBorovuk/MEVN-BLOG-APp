@@ -75,3 +75,6 @@ export const useAuthStore = defineStore('authUser', () => {
     signup
   }
 })
+
+
+// "build": "vue-tsc -b && vite build",
