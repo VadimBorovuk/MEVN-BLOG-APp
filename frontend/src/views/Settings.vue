@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import {THEMES} from "../constants";
+import {THEMES} from "../constants/index.js";
 import {useThemeStore} from "../stores/themeStore.js";
 
 const themeStore = useThemeStore();
