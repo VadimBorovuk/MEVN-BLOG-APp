@@ -12,11 +12,14 @@
           accept="image/*"
           @change="handleImageUpload"
       />
-      <img
-          style="max-width: 300px"
-          :src="blogData.previewImage || '/avatar.png'"
-          alt="image"
-      />
+      <div class="max-w-sm">
+        <img
+            class="w-full"
+            :src="blogData.previewImage || '/avatar.png'"
+            alt="image"
+        />
+      </div>
+
     </div>
 
   </div>
@@ -26,45 +29,17 @@
 import {onMounted, ref} from "vue";
 import {axiosInstance} from "../utils/axios.ts";
 import {useRoute} from "vue-router";
-
-type TypeUser = {
-  fullName: string
-  email: string
-  password: string
-}
-
-type TypeLike = {
-  userId: TypeUser
-}
-
-type TypeComment = {
-  _id: number
-  userId: TypeUser
-  content: string
-  likes: TypeLike[]
-  createdAt: Date
-}
-
-
-interface IBlog {
-  _id?: number
-  userId?: TypeUser
-  title?: string
-  content?: string
-  comments?: TypeComment[]
-  likes?: TypeLike[]
-  previewImage?: any
-}
+import type {PartialIBlog, TypeBlog} from "../types";
 
 const isLoading = ref<boolean>(false)
-const blogData = ref<IBlog>({})
+const blogData = ref<PartialIBlog>({})
 const route = useRoute()
 const currentBlogId = route.params.id
 
 const fetchBlogById = async (id: string | string[]) => {
   isLoading.value = true
   try {
-    const res = await axiosInstance.get<IBlog>(`/blogs/${id}`);
+    const res = await axiosInstance.get<TypeBlog>(`/blogs/${id}`);
     blogData.value = res.data
   } catch (e) {
     console.log(e)
@@ -73,26 +48,25 @@ const fetchBlogById = async (id: string | string[]) => {
   }
 }
 
-const handleImageUpload = async (e: any) => {
-  const file = e.target.files[0];
+const handleImageUpload = async (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const file = target.files?.[0];
   if (!file) return;
   const reader = new FileReader();
 
   reader.readAsDataURL(file);
 
   reader.onload = async () => {
-    const base64Image = reader.result;
-    blogData.value.previewImage = base64Image
+    blogData.value.previewImage = reader.result as string
     await updateBlog({
-      title: blogData.value.title,
-      content: blogData.value.content,
-      previewImage: blogData.value.previewImage
+      title: blogData.value.title ?? '',
+      content: blogData.value.content ?? '',
+      previewImage: blogData.value.previewImage ?? ''
     });
   };
 };
 
-const updateBlog = async (data: any) => {
-  console.log(data)
+const updateBlog = async (data: PartialIBlog) => {
   try {
     await axiosInstance.put(`/blogs/update/${currentBlogId}`, data);
     console.log('updated')

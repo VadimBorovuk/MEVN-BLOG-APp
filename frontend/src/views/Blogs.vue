@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1>get Blogs</h1>
 
     <div v-if="isLoading">Blog loading...</div>
 
@@ -34,39 +33,19 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import {axiosInstance} from "../utils/axios.ts";
-import {type TypeAuthUser, useAuthStore} from "../stores/authStore.ts";
+import {useAuthStore} from "../stores/authStore.ts";
+import type {TypeBlog} from "../types";
 
-
-type TypeLike = {
-  userId: TypeAuthUser
-}
-
-type TypeComment = {
-  _id: number
-  userId: TypeAuthUser
-  content: string
-  likes: TypeLike[]
-  createdAt: Date
-}
-
-interface IBlog {
-  _id: number
-  userId: TypeAuthUser
-  title: string
-  content: string
-  comments: TypeComment[]
-  likes: TypeLike[]
-}
 
 const authUserStore = useAuthStore()
 
 const isLoading = ref<boolean>(false)
-const blogs = ref<IBlog[]>([])
+const blogs = ref<TypeBlog[]>([])
 
 const fetchBlogs = async () => {
   isLoading.value = true
   try {
-    const res = await axiosInstance.get<IBlog[]>("/blogs");
+    const res = await axiosInstance.get<TypeBlog[]>("/blogs");
     blogs.value = res.data
   } catch (e) {
     blogs.value = []

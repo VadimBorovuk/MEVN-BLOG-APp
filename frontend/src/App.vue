@@ -1,32 +1,24 @@
 <template>
-  <div class="bg-violet-200">
-    <div style="display: flex; align-items: center">
-      <h1 class="mr-3 text-4xl">App MEVN Blog</h1>
-      <h2 v-if="authUserStore.authUser" class="text-2xl">{{ userFullName }}</h2>
+  <div :data-theme="themeStore.theme" class="min-h-screen flex flex-col">
+    <Navbar />
 
-      <button @click="() => authUserStore.logout(router)">Logout</button>
+    <div v-if="authUserStore.isCheckingAuth && !authUserStore.authUser"
+         class="flex-grow flex items-center justify-center">
+      <Loader class="size-10 animate-spin" />
     </div>
 
-    <hr>
-    <aside>
-      <router-link active-class="text-white bg-blue-600" class="text-xl mr-3" to="/">Home</router-link>
-      <router-link active-class="text-white bg-blue-600" class="text-xl" to="/profile">Profile</router-link>
-    </aside>
-
-    <router-view/>
+    <div v-else class="flex-grow pt-20 pb-10 h-full">
+      <router-view />
+    </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import {useAuthStore} from "./stores/authStore.ts";
-import {useRouter} from "vue-router";
-import {computed} from "vue";
-const router = useRouter()
-const authUserStore = useAuthStore()
+<script setup>
+import {useAuthStore} from "./stores/authStore.js";
+import { Loader } from "lucide-vue-next";
+import {useThemeStore} from "./stores/themeStore.js";
+import Navbar from "./components/Navbar.vue";
 
-const userFullName = computed(() => authUserStore.authUser?.fullName ?? "");
+const authUserStore = useAuthStore();
+const themeStore = useThemeStore();
 </script>
-
-<style scoped>
-
-</style>

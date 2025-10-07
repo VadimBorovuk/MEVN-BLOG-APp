@@ -5,6 +5,7 @@ import ProfileView from "../views/Profile.vue";
 import BlogsInfoView from "../views/BlogsInfo.vue";
 import {useAuthStore} from "../stores/authStore.ts";
 import Signup from "../views/Signup.vue";
+import SettingsView from "../views/Settings.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -30,6 +31,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'login',
     component: LoginView,
     meta: { guestOnly: true }
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    component: SettingsView,
   },
   {
     path: '/signup',

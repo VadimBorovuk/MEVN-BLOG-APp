@@ -1,5 +1,5 @@
 import {axiosInstance} from "../utils/axios.ts";
-import type {TypeAuthUser} from "../stores/authStore.ts";
+import type {PartialAuth, TypeAuth} from "../types";
 
 export function getAuthCheck() {
   return axiosInstance({
@@ -8,7 +8,7 @@ export function getAuthCheck() {
   })
 }
 
-export function loginAuth(data: TypeAuthUser) {
+export function loginAuth(data: TypeAuth) {
   return axiosInstance({
     url: `/auth/login`,
     method: 'post',
@@ -16,10 +16,18 @@ export function loginAuth(data: TypeAuthUser) {
   })
 }
 
-export function signupAuth(data: TypeAuthUser) {
+export function signupAuth(data: TypeAuth) {
   return axiosInstance({
     url: `/auth/signup`,
     method: 'post',
+    data
+  })
+}
+
+export function updateAvatar(data: PartialAuth) {
+  return axiosInstance({
+    url: `/auth/update_profile`,
+    method: 'put',
     data
   })
 }
