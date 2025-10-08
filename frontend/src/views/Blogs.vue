@@ -1,61 +1,37 @@
 <template>
-  <div>
+  <ScrollProgress/>
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-12 gap-8">
+      <template v-if="blogStore.isLoadingBlogs">
+        <BlogSkeleton v-for="i in 6" :key="i" class="col-span-6" />
+      </template>
 
-    <div v-if="isLoading">Blog loading...</div>
-
-    <ul v-else>
-      <li v-for="blog in blogs" :key="blog._id" style="border: 3px solid; padding: 10px; margin-bottom: 10px">
-        <router-link :to="`/blogs/${blog._id}`" v-if="authUserStore.authUser?._id === blog.userId?._id">
-          {{ blog.title }} - {{ blog.content }} - {{ blog.userId.fullName }}
-        </router-link>
-        <span v-else>
-            {{ blog.title }} - {{ blog.content }} - {{ blog.userId.fullName }}
-        </span>
-
-        <div>
-          <ul v-if="!!blog.comments.length">
-            <li v-for="comment in blog.comments" :key="comment._id" style="background-color: indianred">
-              {{ comment.content }}
-              <hr>
-              <h2>Likes</h2>: {{ comment.likes }}
-            </li>
-          </ul>
-        </div>
-        <hr>
-        <div v-if="!!blog.likes.length">
-          <h2>Likes</h2>: {{ blog.likes }}
-        </div>
-      </li>
-    </ul>
+      <BlogCard
+          v-else
+          v-for="(blog, index) in blogStore.blogs"
+          :blogData="blog"
+          :key="blog._id"
+          :class="getColSpanClass(index)"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import {axiosInstance} from "../utils/axios.ts";
-import {useAuthStore} from "../stores/authStore.ts";
-import type {TypeBlog} from "../types";
+import {onMounted} from "vue";
+import {useBlogStore} from "../stores/blogStore.ts";
+import BlogCard from "../components/BlogCard.vue";
+import ScrollProgress from "../components/UI/ScrollProgress.vue";
+import BlogSkeleton from "../components/UI/BlogSkeleton.vue";
+const blogStore = useBlogStore()
 
+const getColSpanClass = (index: number) => {
+  const spans = ['col-span-6', 'col-span-6', 'col-span-4', 'col-span-4', 'col-span-4'];
 
-const authUserStore = useAuthStore()
-
-const isLoading = ref<boolean>(false)
-const blogs = ref<TypeBlog[]>([])
-
-const fetchBlogs = async () => {
-  isLoading.value = true
-  try {
-    const res = await axiosInstance.get<TypeBlog[]>("/blogs");
-    blogs.value = res.data
-  } catch (e) {
-    blogs.value = []
-    console.log(e)
-  } finally {
-    isLoading.value = false
-  }
+  return spans[index % spans.length];
 }
 
 onMounted(() => {
-  fetchBlogs()
+  blogStore.getAllBlogs()
 })
 </script>

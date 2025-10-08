@@ -24,9 +24,17 @@
           </router-link>
 
           <template v-if="authUserStore.authUser">
-            <router-link to="/profile" class="btn btn-sm gap-2">
-              <User class="size-5"/>
-              <span class="hidden sm:inline">{{userFullName}}</span>
+            <router-link to="/profile" class="btn btn-sm p-0">
+              <div class="avatar">
+                <div class="w-8 rounded p-1">
+                  <img
+                      class="rounded-full object-contain!"
+                      :src="authUserStore.authUser?.profilePic || '/image.png'"
+                      alt="avatar"
+                  />
+                </div>
+              </div>
+              <span class="hidden sm:inline">{{authUserStore.authUser?.fullName}}</span>
             </router-link>
 
             <button class="flex gap-2 items-center cursor-pointer" @click="authUserStore.logout(router)">
@@ -45,11 +53,9 @@
 <script setup>
 import {useAuthStore} from "../stores/authStore.ts";
 import {useRouter} from "vue-router";
-import {computed} from "vue";
 
 const router = useRouter()
 const authUserStore = useAuthStore()
-import {Newspaper, Settings, User, LogOut} from "lucide-vue-next";
+import {Newspaper, Settings, LogOut} from "lucide-vue-next";
 
-const userFullName = computed(() => authUserStore.authUser?.fullName ?? "");
 </script>

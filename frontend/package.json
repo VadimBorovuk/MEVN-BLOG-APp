@@ -12,6 +12,7 @@
     "@tailwindcss/vite": "^4.1.13",
     "axios": "^1.12.2",
     "daisyui": "^5.1.26",
+    "dayjs": "^1.11.18",
     "lucide-vue-next": "^0.544.0",
     "pinia": "^3.0.3",
     "tailwindcss": "^4.1.13",

@@ -1,9 +1,11 @@
 <template>
+  <ScrollProgress/>
   <div>
-    <h1>{{blogData.title}}</h1>
-   <span>{{blogData.content}}</span>
+    <h1>{{ blogStore.currentBlog.title}}</h1>
+   <span>{{blogStore.currentBlog.content}}
+   </span>
 
-    <div v-if="isLoading">Blog loading...</div>
+    <div v-if="blogStore.isLoadingCurrentBlog">Blog loading...</div>
 
     <div>
       <input
@@ -15,38 +17,26 @@
       <div class="max-w-sm">
         <img
             class="w-full"
-            :src="blogData.previewImage || '/avatar.png'"
+            :src="blogStore.currentBlog.previewImage || '/avatar.png'"
             alt="image"
         />
       </div>
 
     </div>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import {axiosInstance} from "../utils/axios.ts";
+import {onMounted} from "vue";
 import {useRoute} from "vue-router";
-import type {PartialIBlog, TypeBlog} from "../types";
+import type {PartialIBlog} from "../types";
+import {useBlogStore} from "../stores/blogStore.ts";
+import ScrollProgress from "../components/UI/ScrollProgress.vue";
 
-const isLoading = ref<boolean>(false)
-const blogData = ref<PartialIBlog>({})
+const blogStore = useBlogStore()
 const route = useRoute()
 const currentBlogId = route.params.id
 
-const fetchBlogById = async (id: string | string[]) => {
-  isLoading.value = true
-  try {
-    const res = await axiosInstance.get<TypeBlog>(`/blogs/${id}`);
-    blogData.value = res.data
-  } catch (e) {
-    console.log(e)
-  } finally {
-    isLoading.value = false
-  }
-}
 
 const handleImageUpload = async (e: Event) => {
   const target = e.target as HTMLInputElement;
@@ -57,18 +47,18 @@ const handleImageUpload = async (e: Event) => {
   reader.readAsDataURL(file);
 
   reader.onload = async () => {
-    blogData.value.previewImage = reader.result as string
+    blogStore.changePreviewImage(reader.result as string)
     await updateBlog({
-      title: blogData.value.title ?? '',
-      content: blogData.value.content ?? '',
-      previewImage: blogData.value.previewImage ?? ''
+      title: blogStore.currentBlog.title ?? '',
+      content: blogStore.currentBlog.content ?? '',
+      previewImage: blogStore.currentBlog.previewImage ?? ''
     });
   };
 };
 
 const updateBlog = async (data: PartialIBlog) => {
   try {
-    await axiosInstance.put(`/blogs/update/${currentBlogId}`, data);
+    await blogStore.updateCurrentBlog(data, currentBlogId ?? '');
     console.log('updated')
   } catch (e) {
     console.log(e)
@@ -78,8 +68,7 @@ const updateBlog = async (data: PartialIBlog) => {
 
 onMounted(() => {
   if (currentBlogId){
-    fetchBlogById(currentBlogId)
+    blogStore.getCurrentBlog(currentBlogId)
   }
-  // fetchBlogs()
 })
 </script>

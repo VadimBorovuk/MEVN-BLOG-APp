@@ -5,10 +5,10 @@ export const getBlogs = async (req, res) => {
   try {
     const blogs = await BlogModel
         .find()
-        .populate("userId", "fullName")
-        .populate("comments.userId", "fullName")
-        .populate("comments.likes.userId", "fullName")
-        .populate("likes.userId", "fullName")
+        .populate("userId", "fullName profilePic")
+        .populate("comments.userId", "fullName profilePic")
+        .populate("comments.likes.userId", "fullName profilePic")
+        .populate("likes.userId", "fullName profilePic")
         .sort({createdAt: -1});
     return res.status(200).json(blogs)
   } catch (e) {
@@ -22,10 +22,10 @@ export const getBlogsById = async (req, res) => {
 
     const findBlog = await BlogModel
         .findById(blogId)
-        .populate("userId", "fullName")
-        .populate("comments.userId", "fullName")
-        .populate("comments.likes.userId", "fullName")
-        .populate("likes.userId", "fullName")
+        .populate("userId", "fullName profilePic")
+        .populate("comments.userId", "fullName profilePic")
+        .populate("comments.likes.userId", "fullName profilePic")
+        .populate("likes.userId", "fullName profilePic")
 
     if (!findBlog) {
       return res.status(404).json({message: "Блог не знайдено"});

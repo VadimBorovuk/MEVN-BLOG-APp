@@ -1,19 +1,39 @@
-// import {serviceTrigger} from "../utils/request";
-//
-// export function geListOfBrands(filters, page, sortData) {
-//   let url = `/v1/brand/get?page=${page}`;
-//
-//   if (Object.keys(filters).length) {
-//     for (let key in filters) {
-//       url += `&filter[${key}]=${filters[key]}`
-//     }
-//   }
-//   if (sortData && sortData.length > 0) {
-//     url += `&sort=${sortData}`
-//   }
-//
-//   return serviceTrigger({
-//     url: url,
-//     method: 'get'
-//   })
-// }
+import {axiosInstance} from "../utils/axios.ts";
+import type {PartialIBlog} from "../types";
+
+export function fetchBlogs() {
+  return axiosInstance({
+    url: `/blogs`,
+    method: 'get'
+  })
+}
+
+export function fetchBlogById(id: string | string[]) {
+  return axiosInstance({
+    url: `/blogs/${id}`,
+    method: 'get'
+  })
+}
+
+export function createBlog(data: PartialIBlog) {
+  return axiosInstance({
+    url: `/blogs/create`,
+    method: 'post',
+    data
+  })
+}
+
+export function updateBlog(data: PartialIBlog, id: string | string[]) {
+  return axiosInstance({
+    url: `/blogs/update/${id}`,
+    method: 'put',
+    data
+  })
+}
+
+export function deleteBlog(id: string | string[]) {
+  return axiosInstance({
+    url: `/blogs/delete/${id}`,
+    method: 'delete'
+  })
+}
