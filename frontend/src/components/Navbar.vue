@@ -14,34 +14,47 @@
           </router-link>
         </div>
 
-        <div class="flex items-center gap-2">
-          <router-link
-              to="/settings"
-              class="btn btn-sm gap-2 transition-colors"
-          >
-            <Settings class="w-4 h-4"/>
-            <span class="hidden sm:inline">Settings</span>
+        <div v-if="authUserStore.authUser" class="flex items-center gap-2">
+          <router-link to="/create-blog" class="btn btn-soft btn-primary flex items-center">
+            <DiamondPlus/>
+            <span>Create blog</span>
           </router-link>
-
-          <template v-if="authUserStore.authUser">
-            <router-link to="/profile" class="btn btn-sm p-0">
-              <div class="avatar">
-                <div class="w-8 rounded p-1">
-                  <img
-                      class="rounded-full object-contain!"
-                      :src="authUserStore.authUser?.profilePic || '/image.png'"
-                      alt="avatar"
-                  />
-                </div>
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+              <div class="w-10 rounded-full">
+                <img
+                    alt="Tailwind CSS Navbar component"
+                    :src="authUserStore.authUser?.profilePic || '/image.png'"/>
               </div>
-              <span class="hidden sm:inline">{{authUserStore.authUser?.fullName}}</span>
-            </router-link>
+            </div>
 
-            <button class="flex gap-2 items-center cursor-pointer" @click="authUserStore.logout(router)">
-              <LogOut class="size-5"/>
-              <span class="hidden sm:inline">Logout</span>
-            </button>
-          </template>
+            <ul
+                tabindex="0"
+                class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+              <li>
+                <router-link to="/profile" class="justify-between">
+                  Profile
+                  <span class="badge">
+                    {{authUserStore.authUser?.fullName}}
+                  </span>
+                </router-link>
+              </li>
+              <li>
+                <router-link
+                    to="/settings"
+                >
+                  <Settings class="w-4 h-4"/>
+                  <span>Settings</span>
+                </router-link>
+              </li>
+              <li @click="authUserStore.logout(router)">
+                <div class="flex items-center">
+                  <LogOut class="size-4"/>
+                  <span>Logout</span>
+                </div>
+              </li>
+            </ul>
+          </div>
 
         </div>
       </div>
@@ -56,6 +69,6 @@ import {useRouter} from "vue-router";
 
 const router = useRouter()
 const authUserStore = useAuthStore()
-import {Newspaper, Settings, LogOut} from "lucide-vue-next";
+import {Newspaper, Settings, LogOut, DiamondPlus} from "lucide-vue-next";
 
 </script>

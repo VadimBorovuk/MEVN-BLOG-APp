@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@kyvg/vue3-notification": "^3.4.1",
+    "@mayasabha/ckeditor4-vue3": "^1.0.9",
     "@tailwindcss/vite": "^4.1.13",
     "axios": "^1.12.2",
     "daisyui": "^5.1.26",

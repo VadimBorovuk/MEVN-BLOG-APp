@@ -30,7 +30,7 @@
         </button>
       </div>
 
-      <div class="flex justify-center w-full items-center card bg-base-100 max-w-md shadow-lg mt-10 border border-gray-200">
+      <div class="flex justify-center w-full items-center card bg-base-100 max-w-md shadow-lg mb-10">
         <figure class="min-h-[100px] max-h-[250px]">
           <img
               src='/image.png'

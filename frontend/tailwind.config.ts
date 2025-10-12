@@ -7,7 +7,11 @@ export default {
     "./src/**/*.{vue,js,ts,jsx,tsx}", // ✅ важливо для Vue
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['Rubik', 'sans-serif', 'system-ui'], // заміна дефолтного sans
+      },
+    },
   },
   plugins: [daisyui],
   daisyui: {

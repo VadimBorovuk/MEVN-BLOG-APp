@@ -5,15 +5,16 @@ export type TypeLike = {
 }
 
 export type TypeComment = {
-  _id: number
+  _id: string
   userId: TypeAuth
   content: string
   likes: TypeLike[]
   createdAt: Date
+  is_updated?: boolean
 }
 
 export type TypeBlog = {
-  _id: number
+  _id: string
   userId: TypeAuth
   title: string
   content: string
@@ -23,4 +24,6 @@ export type TypeBlog = {
   createdAt: Date
 }
 
+export type TypeBlogId = string | string[]
 export type PartialIBlog = Partial<TypeBlog>
+export type PickCreateBlog = Pick<TypeBlog, 'title' | 'content' | 'previewImage'>

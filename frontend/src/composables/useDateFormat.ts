@@ -1,9 +1,9 @@
 import dayjs from "dayjs";
 
-export const useData = (date: Date | null) => {
+export const useDate = (date: Date | null, formatVal: string = 'DD.MM.YYYY') => {
   if (!date) return null;
 
-  return dayjs(date).format('DD.MM.YYYY')
+  return dayjs(date).format(formatVal)
 }
 
 export const useDiff = (date: Date | null) => {

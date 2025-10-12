@@ -2,6 +2,8 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import LoginView from '../views/Login.vue'
 import BlogsView from "../views/Blogs.vue";
 import ProfileView from "../views/Profile.vue";
+import CreateBlogView from "../views/CreateBlog.vue";
+import UpdateBlogView from "../views/UpdateBlog.vue";
 import BlogsInfoView from "../views/BlogsInfo.vue";
 import {useAuthStore} from "../stores/authStore.ts";
 import Signup from "../views/Signup.vue";
@@ -24,6 +26,18 @@ const routes: Array<RouteRecordRaw> = [
     path: '/profile',
     name: 'profile',
     component: ProfileView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/create-blog',
+    name: 'create blog',
+    component: CreateBlogView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/update-blog/:id',
+    name: 'update blog',
+    component: UpdateBlogView,
     meta: { requiresAuth: true }
   },
   {

@@ -2,16 +2,37 @@ import {defineStore} from 'pinia'
 import {ref} from "vue";
 
 // import type {Router} from "vue-router";
-import type {PartialIBlog, TypeBlog} from "../types";
+import type {PartialIBlog, PickCreateBlog, TypeBlog, TypeBlogId} from "../types";
 import type {AxiosResponse} from "axios";
-import {fetchBlogById, fetchBlogs, updateBlog} from "../api/blogsApi.ts";
+import {
+  addCommentOfBlog,
+  createBlog,
+  deleteCommentOfBlog,
+  fetchBlogById,
+  fetchBlogs,
+  likeBlog,
+  updateBlog, updateCommentOfBlog
+} from "../api/blogsApi.ts";
 
 export const useBlogStore = defineStore('Blog', () => {
   const isLoadingBlogs = ref<boolean>(false)
   const isLoadingCurrentBlog = ref<boolean>(false)
+  const isLoadingCreatingBlog = ref<boolean>(false)
 
   const blogs = ref<TypeBlog[]>([])
-  const currentBlog = ref<PartialIBlog>({})
+  const currentBlog = ref<PartialIBlog>({
+    title: '',
+    content: '',
+    previewImage: ''
+  })
+
+  const blogDataCreate = ref<PickCreateBlog>({
+    title: '',
+    content: '',
+    previewImage: ''
+  });
+
+  const commentVal = ref('');
 
   const getAllBlogs = async () => {
     isLoadingBlogs.value = true
@@ -26,15 +47,28 @@ export const useBlogStore = defineStore('Blog', () => {
     }
   }
 
-  const getCurrentBlog = async (id: string | string[]) => {
+  const getCurrentBlog = async (id: TypeBlogId) => {
     isLoadingCurrentBlog.value = true
+    currentBlog.value = {title: '', content: '', previewImage: ''}
     try {
       const res: AxiosResponse<TypeBlog> = await fetchBlogById(id);
-      currentBlog.value = res.data
+      currentBlog.value = {
+        ...res.data,
+        comments: res.data.comments.map(item => ({...item, is_updated: false}))
+      }
     } catch (e) {
       console.log(e)
     } finally {
       isLoadingCurrentBlog.value = false
+    }
+  }
+
+
+  const switchLike = async (blogId: string) => {
+    try {
+      await likeBlog(blogId)
+    } catch (e) {
+      console.log(e)
     }
   }
 
@@ -42,10 +76,33 @@ export const useBlogStore = defineStore('Blog', () => {
     currentBlog.value.previewImage = data
   }
 
-  const updateCurrentBlog = async (data: PartialIBlog, id: string | string[]) => {
+  const selectPreviewImage = (data: string) => {
+    blogDataCreate.value.previewImage = data
+  }
+
+  const clearParamsBlog = () => {
+    blogDataCreate.value = {
+      title: '',
+      content: '',
+      previewImage: ''
+    }
+  }
+
+  const addBlog = async () => {
+    isLoadingCreatingBlog.value = true
+    try {
+      await createBlog(blogDataCreate.value);
+    } catch (e) {
+      console.log(e)
+    } finally {
+      isLoadingCreatingBlog.value = false
+    }
+  }
+
+  const updateCurrentBlog = async (id: TypeBlogId) => {
     isLoadingCurrentBlog.value = true
     try {
-      const res: AxiosResponse<TypeBlog> = await updateBlog(data,id);
+      const res: AxiosResponse<TypeBlog> = await updateBlog(currentBlog.value, id);
       currentBlog.value = res.data
     } catch (e) {
       console.log(e)
@@ -54,15 +111,55 @@ export const useBlogStore = defineStore('Blog', () => {
     }
   }
 
+  // comments
+
+  const createNewComment = async (blogId: string) => {
+    try {
+      // commentVal
+      await addCommentOfBlog({content: commentVal.value}, blogId);
+      commentVal.value = '';
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const updateCurrentComment = async (content: string, blogId: TypeBlogId, commentId: string) => {
+    try {
+      await updateCommentOfBlog({content}, blogId, commentId);
+      commentVal.value = '';
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const deleteCurrentComment = async (blogId: TypeBlogId, commentId: string) => {
+    try {
+      await deleteCommentOfBlog(blogId, commentId);
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  // deleteCommentOfBlog
+
   return {
     isLoadingBlogs,
     isLoadingCurrentBlog,
     currentBlog,
     blogs,
+    blogDataCreate,
+    commentVal,
+    switchLike,
+    createNewComment,
+    clearParamsBlog,
+    selectPreviewImage,
     changePreviewImage,
+    addBlog,
     getAllBlogs,
     getCurrentBlog,
-    updateCurrentBlog
+    updateCurrentBlog,
+    deleteCurrentComment,
+    updateCurrentComment
   }
 })
 

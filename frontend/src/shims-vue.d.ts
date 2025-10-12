@@ -4,3 +4,4 @@ declare module "*.vue" {
   const component: DefineComponent<{}, {}, any>;
   export default component;
 }
+declare module '@mayasabha/ckeditor4-vue3'

@@ -27,7 +27,7 @@ onUnmounted(() => {
   position: fixed;
   top: 0;
   left: 0;
-  height: 4px;
+  height: 6px;
   background-color: #3eaf7c;
   z-index: 9999;
 }

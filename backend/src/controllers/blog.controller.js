@@ -30,6 +30,7 @@ export const getBlogsById = async (req, res) => {
     if (!findBlog) {
       return res.status(404).json({message: "Блог не знайдено"});
     }
+    findBlog.comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     return res.status(200).json(findBlog)
   } catch (e) {

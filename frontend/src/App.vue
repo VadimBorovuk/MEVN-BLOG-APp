@@ -7,10 +7,12 @@
       <Loader class="size-10 animate-spin" />
     </div>
 
-    <div v-else class="flex-grow pt-20 pb-10 h-full">
+    <div v-else class="flex-grow h-full">
       <router-view />
     </div>
   </div>
+  <Notifications
+      position="top right" />
 </template>
 
 <script setup>
