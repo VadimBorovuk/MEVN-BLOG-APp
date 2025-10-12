@@ -27,7 +27,7 @@ import BlogSkeleton from "../components/UI/BlogSkeleton.vue";
 
 const blogStore = useBlogStore();
 
-const blogsEndRef = ref<HTMLDivElement | null>(null);
+const blogsEndRef = ref<HTMLDivElement | null>(null)
 
 const getColSpanClass = (index: number) => {
   const spans = ['col-span-6', 'col-span-6', 'col-span-4', 'col-span-4', 'col-span-4'];
@@ -41,5 +41,6 @@ onMounted(async () => {
   if (blogsEndRef.value) {
     blogsEndRef.value.scrollIntoView({ behavior: "smooth" });
   }
+
 })
 </script>

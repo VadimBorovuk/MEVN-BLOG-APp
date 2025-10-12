@@ -1,12 +1,12 @@
 import type {TypeAuth} from "./auth.ts";
 
 export type TypeLike = {
-  userId: TypeAuth
+  userId: TypeAuth | null
 }
 
 export type TypeComment = {
   _id: string
-  userId: TypeAuth
+  userId: TypeAuth | null
   content: string
   likes: TypeLike[]
   createdAt: Date
@@ -15,7 +15,7 @@ export type TypeComment = {
 
 export type TypeBlog = {
   _id: string
-  userId: TypeAuth
+  userId: TypeAuth | null
   title: string
   content: string
   previewImage: string

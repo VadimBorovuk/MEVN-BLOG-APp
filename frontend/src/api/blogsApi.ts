@@ -39,7 +39,7 @@ export function deleteBlog(id: TypeBlogId) {
 }
 
 // comments
-export function addCommentOfBlog(data: {content: string}, blogId: TypeBlogId) {
+export function addCommentOfBlog(data: { content: string }, blogId: TypeBlogId) {
   return axiosInstance({
     url: `/blogs/${blogId}/comments/add`,
     method: 'post',
@@ -47,7 +47,7 @@ export function addCommentOfBlog(data: {content: string}, blogId: TypeBlogId) {
   })
 }
 
-export function updateCommentOfBlog(data: {content: string}, blogId: TypeBlogId, commentId: string) {
+export function updateCommentOfBlog(data: { content: string }, blogId: TypeBlogId, commentId: string) {
   return axiosInstance({
     url: `/blogs/${blogId}/comments/${commentId}/update`,
     method: 'put',
@@ -65,13 +65,19 @@ export function deleteCommentOfBlog(blogId: TypeBlogId, commentId: string) {
 //likes
 
 // of blog
-export function likeBlog(blogId: string) {
+export function likeBlog(blogId: TypeBlogId) {
   return axiosInstance({
     url: `/blogs/${blogId}/like`,
     method: 'post'
   })
 }
 
+
 // of comment
 
-
+export function likeComment(blogId: TypeBlogId, commentId: string) {
+  return axiosInstance({
+    url: `/blogs/${blogId}/comments/${commentId}/like`,
+    method: 'post'
+  })
+}

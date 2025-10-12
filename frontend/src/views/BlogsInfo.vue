@@ -1,6 +1,6 @@
 <template>
   <ScrollProgress/>
-  <div class="container mx-auto px-4 pt-24 pb-10">
+  <div class="container mx-auto px-4 pt-24 pb-10" ref="blogEndRef">
     <Breadcrumbs :current-crumb="blogStore.currentBlog.title"/>
 
     <template v-if="blogStore.isLoadingCurrentBlog">
@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted} from "vue";
+import {onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
 import {useBlogStore} from "../stores/blogStore.ts";
 import ScrollProgress from "../components/UI/ScrollProgress.vue";
@@ -85,10 +85,11 @@ const route = useRoute()
 const currentBlogId = route.params.id;
 
 const {notify} = useNotification();
+const blogEndRef = ref<HTMLDivElement | null>(null)
 
 const toggleLike = async (id: string) => {
   try {
-    await blogStore.switchLike(id);
+    await blogStore.switchLikeBlog(id);
     if (currentBlogId) {
       await blogStore.getCurrentBlog(currentBlogId)
     }
@@ -112,6 +113,9 @@ const toggleLike = async (id: string) => {
 onMounted(() => {
   if (currentBlogId) {
     blogStore.getCurrentBlog(currentBlogId)
+  }
+  if (blogEndRef.value) {
+    blogEndRef.value.scrollIntoView({ behavior: "smooth" });
   }
 })
 </script>

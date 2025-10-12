@@ -92,7 +92,7 @@ export const checkAuth = (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const {profilePic} = req.body;
+    const {profilePic, fullName} = req.body;
     const userId = req.user._id;
 
     if (!profilePic) {
@@ -104,7 +104,10 @@ export const updateProfile = async (req, res) => {
     });
     const updatedUser = await User.findByIdAndUpdate(
         userId,
-        {profilePic: uploadResponse.secure_url},
+        {
+          profilePic: uploadResponse.secure_url,
+          fullName
+        },
         {new: true}
     );
 

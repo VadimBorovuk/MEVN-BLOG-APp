@@ -24,7 +24,7 @@ export function signupAuth(data: TypeAuth) {
   })
 }
 
-export function updateAvatar(data: PartialAuth) {
+export function updateUserAuth(data: PartialAuth) {
   return axiosInstance({
     url: `/auth/update_profile`,
     method: 'put',

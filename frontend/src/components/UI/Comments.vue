@@ -7,11 +7,12 @@
 
 
     <div class="w-full relative flex justify-between gap-2 mb-3">
-      <input type="text"
-             @keypress.enter.prevent="createComment"
-             v-model="blogStore.commentVal"
-             class="w-full py-3 px-5 rounded-lg border border-gray-300 bg-white shadow-[0px_1px_2px_0px_rgba(16,_24,_40,_0.05)] focus:outline-none text-gray-900 placeholder-gray-400 text-lg font-normal leading-relaxed"
-             placeholder="Write comments here....">
+      <textarea
+          rows="3"
+          @keypress.enter.prevent="createComment"
+          v-model="blogStore.commentVal"
+          class="w-full py-3 px-5 rounded-lg border border-gray-300 bg-white shadow-[0px_1px_2px_0px_rgba(16,_24,_40,_0.05)] focus:outline-none text-gray-900 placeholder-gray-400 text-lg font-normal leading-relaxed"
+          placeholder="Write comments here...."/>
       <a href="" class="absolute right-6 top-[18px]">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"
              fill="none">

@@ -2,19 +2,22 @@ import {defineStore} from 'pinia'
 import {ref} from "vue";
 
 // import type {Router} from "vue-router";
-import type {PartialIBlog, PickCreateBlog, TypeBlog, TypeBlogId} from "../types";
+import type {PartialIBlog, PickCreateBlog, TypeAuth, TypeBlog, TypeBlogId} from "../types";
 import type {AxiosResponse} from "axios";
 import {
   addCommentOfBlog,
-  createBlog,
+  createBlog, deleteBlog,
   deleteCommentOfBlog,
   fetchBlogById,
   fetchBlogs,
-  likeBlog,
+  likeBlog, likeComment,
   updateBlog, updateCommentOfBlog
 } from "../api/blogsApi.ts";
+import {useAuthStore} from "./authStore.ts";
 
 export const useBlogStore = defineStore('Blog', () => {
+  const authStore = useAuthStore()
+
   const isLoadingBlogs = ref<boolean>(false)
   const isLoadingCurrentBlog = ref<boolean>(false)
   const isLoadingCreatingBlog = ref<boolean>(false)
@@ -26,11 +29,13 @@ export const useBlogStore = defineStore('Blog', () => {
     previewImage: ''
   })
 
-  const blogDataCreate = ref<PickCreateBlog>({
+  const blogDataCreate = ref<PickCreateBlog & {userId: TypeAuth | null}>({
     title: '',
     content: '',
-    previewImage: ''
+    previewImage: '',
+    userId: null
   });
+
 
   const commentVal = ref('');
 
@@ -64,9 +69,17 @@ export const useBlogStore = defineStore('Blog', () => {
   }
 
 
-  const switchLike = async (blogId: string) => {
+  const switchLikeBlog = async (blogId: string) => {
     try {
       await likeBlog(blogId)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const switchLikeComment = async (blogId: TypeBlogId, commentId: string) => {
+    try {
+      await likeComment(blogId, commentId)
     } catch (e) {
       console.log(e)
     }
@@ -84,7 +97,8 @@ export const useBlogStore = defineStore('Blog', () => {
     blogDataCreate.value = {
       title: '',
       content: '',
-      previewImage: ''
+      previewImage: '',
+      userId: authStore.authUser
     }
   }
 
@@ -104,6 +118,17 @@ export const useBlogStore = defineStore('Blog', () => {
     try {
       const res: AxiosResponse<TypeBlog> = await updateBlog(currentBlog.value, id);
       currentBlog.value = res.data
+    } catch (e) {
+      console.log(e)
+    } finally {
+      isLoadingCurrentBlog.value = false
+    }
+  }
+
+  const deleteCurrentBlog = async (blogId: TypeBlogId) => {
+    isLoadingCurrentBlog.value = true
+    try {
+      await deleteBlog(blogId);
     } catch (e) {
       console.log(e)
     } finally {
@@ -149,8 +174,10 @@ export const useBlogStore = defineStore('Blog', () => {
     blogs,
     blogDataCreate,
     commentVal,
-    switchLike,
+    switchLikeBlog,
+    switchLikeComment,
     createNewComment,
+    deleteCurrentBlog,
     clearParamsBlog,
     selectPreviewImage,
     changePreviewImage,

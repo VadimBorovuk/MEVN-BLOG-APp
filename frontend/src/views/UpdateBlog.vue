@@ -69,7 +69,7 @@
 
         <button type="submit" class="btn btn-soft btn-success flex items-center w-full">
           <SquarePen/>
-          <span>Update</span>
+          <span>Save</span>
         </button>
       </form>
     </template>
@@ -106,7 +106,11 @@ const updateNewBlog = async () => {
       text: "Update",
     });
   } catch (e) {
-    console.log(e)
+    notify({
+      type: "error",
+      title: "Error",
+      text: "Update",
+    });
   }
 }
 

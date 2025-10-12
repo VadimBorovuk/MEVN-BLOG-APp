@@ -1,5 +1,6 @@
 <template>
-  <div class="container mx-auto px-4 max-w-5xl">
+  <ScrollProgress/>
+  <div class="container mx-auto px-4 max-w-5xl" ref="settingsEndRef">
     <div class="space-y-6 flex justify-center items-center flex-col">
       <div class="flex flex-col gap-1">
         <h2 class="text-center text-lg font-semibold">Theme</h2>
@@ -53,10 +54,19 @@
   </div>
 </template>
 
-<script setup>
-import {THEMES} from "../constants/index.js";
-import {useThemeStore} from "../stores/themeStore.js";
+<script setup lang="ts">
+import {THEMES} from "../constants";
+import {useThemeStore} from "../stores/themeStore.ts";
+import {onMounted, ref} from "vue";
+import ScrollProgress from "../components/UI/ScrollProgress.vue";
 
 const themeStore = useThemeStore();
+const settingsEndRef = ref<HTMLDivElement | null>(null);
+
+onMounted(() => {
+  if (settingsEndRef.value) {
+    settingsEndRef.value.scrollIntoView({ behavior: "smooth" });
+  }
+})
 </script>
 

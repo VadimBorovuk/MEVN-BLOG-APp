@@ -7,12 +7,12 @@
           <div
               class="w-10 h-10 bg-gray-300 rounded-full justify-start items-start gap-2.5 flex">
             <img class="rounded-full object-cover h-full w-full"
-                 :src="commentBody.userId.profilePic"
+                 :src="commentBody?.userId?.profilePic"
                  alt="Jenny wilson image"/>
           </div>
           <div class="flex-col justify-start items-start gap-1 inline-flex">
             <h5 class="text-gray-900 text-sm font-semibold leading-snug">
-              {{ commentBody.userId.fullName }}
+              {{ commentBody?.userId?.fullName }}
             </h5>
             <h6 class="text-gray-500 text-xs font-normal leading-5">
               {{
@@ -50,64 +50,47 @@
       <p v-if="!commentBody.is_updated" class="text-gray-800 text-sm font-normal leading-snug">
         {{ commentBody.content }}
       </p>
-<!--      -->
-      <input v-else type="text"
-             @keypress.enter.prevent="updateComment(commentBody.content)"
-             v-model="commentBody.content"
-             class="w-full py-3 px-5 rounded-lg border border-gray-300 bg-white shadow-[0px_1px_2px_0px_rgba(16,_24,_40,_0.05)] focus:outline-none text-gray-900 placeholder-gray-400 text-lg font-normal leading-relaxed"
-             placeholder="Write comments here....">
+      <!--      -->
+      <textarea
+          v-else
+          rows="5"
+          @keypress.enter.prevent="updateComment(commentBody.content)"
+          v-model="commentBody.content"
+          class="w-full py-3 px-5 rounded-lg border border-gray-300 bg-white shadow-[0px_1px_2px_0px_rgba(16,_24,_40,_0.05)] focus:outline-none text-gray-900 placeholder-gray-400 text-lg font-normal leading-relaxed"
+          placeholder="Write comments here...."/>
     </div>
     <div class="w-full justify-between items-center inline-flex">
       <div/>
-      <div class="justify-end items-center gap-1 flex">
-        <h5 class="text-gray-500 text-sm font-normal leading-snug">30</h5>
-        <div class="justify-start items-start flex -space-x-2 overflow-hidden">
-          <div
-              class="p-1.5 inline-block ring-1 ring-white bg-gray-100 rounded-full border border-white justify-center items-center flex">
-            <img class="w-3 h-3"
-                 src="https://pagedone.io/asset/uploads/1716545141.png"
-                 alt="Thumbs Up emoji"/>
-          </div>
-          <div
-              class="p-1.5 inline-block ring-1 ring-white bg-gray-100 rounded-full border border-white justify-center items-center flex">
-            <img class="w-3 h-3"
-                 src="https://pagedone.io/asset/uploads/1716545183.png"
-                 alt="Smiling eyes emoji"/>
-          </div>
-          <div
-              class="p-1.5 inline-block ring-1 ring-white bg-gray-100 rounded-full border border-white justify-center items-center flex">
-            <img class="w-3 h-3"
-                 src="https://pagedone.io/asset/uploads/1716545217.png"
-                 alt="hugging face emoji"/>
-          </div>
-        </div>
-      </div>
+      <button
+          v-if="blogStore.currentBlog._id && commentBody._id"
+          @click="toggleLike(blogStore.currentBlog._id, commentBody._id)"
+          class="flex items-center space-x-2 text-gray-600 hover:text-pink-600 transition cursor-pointer"
+      >
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            class="w-6 h-6"
+            :class="{ 'text-pink-600': 1 }"
+        >
+          <path
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2
+              6.5 3.5 5 5.5 5c1.54 0 3.04.99
+              3.57 2.36h1.87C13.46 5.99 14.96 5
+              16.5 5 18.5 5 20 6.5 20
+              8.5c0 3.78-3.4 6.86-8.55
+              11.54L12 21.35z"
+          />
+        </svg>
+        <span>{{ commentBody?.likes?.length }}</span>
+      </button>
     </div>
   </div>
-
-
-  <!--  <div class="justify-start items-center gap-2.5 flex">-->
-  <!--    <div-->
-  <!--        class="w-10 h-10 bg-stone-300 rounded-full justify-start items-start gap-2.5 flex">-->
-  <!--      <img class="rounded-full object-cover"-->
-  <!--           :src="commentBody.userId.profilePic"-->
-  <!--           alt="John smith image" />-->
-  <!--    </div>-->
-  <!--    <div class="flex-col justify-start items-start gap-1 inline-flex">-->
-  <!--      <h5 class="text-gray-900 text-sm font-semibold leading-snug">{{commentBody.userId.fullName}}</h5>-->
-  <!--      <h6 class="text-gray-500 text-xs font-normal leading-5">-->
-  <!--        {{-->
-  <!--          !useDiff(commentBody.createdAt!) ? 'Today' :-->
-  <!--              useDiff(commentBody.createdAt!) === 1 ? `${useDiff(commentBody.createdAt!)} day ago` : `${useDiff(commentBody.createdAt!)} days ago`-->
-  <!--        }}-->
-  <!--      </h6>-->
-  <!--    </div>-->
-  <!--  </div>-->
 </template>
 
 <script setup lang="ts">
 import {defineProps} from "vue";
-import type {TypeComment} from "../../types";
+import type {TypeBlogId, TypeComment} from "../../types";
 import {useDate} from "../../composables/useDateFormat.ts";
 import {SquarePen, Trash2} from "lucide-vue-next";
 import {useBlogStore} from "../../stores/blogStore.ts";
@@ -125,7 +108,7 @@ const {notify} = useNotification();
 
 const deleteComment = async () => {
   try {
-    if (currentBlogId){
+    if (currentBlogId) {
       await blogStore.deleteCurrentComment(currentBlogId, props.commentBody._id)
       await blogStore.getCurrentBlog(currentBlogId)
     }
@@ -136,7 +119,11 @@ const deleteComment = async () => {
       text: "delete comment",
     });
   } catch (e) {
-    console.log(e)
+    notify({
+      type: "error",
+      title: "Error",
+      text: "delete comment",
+    });
   }
 }
 
@@ -144,7 +131,7 @@ const handleComment = (commentData: TypeComment) => {
   commentData.is_updated = !commentData.is_updated
 }
 
-const updateComment =  async (content: string) =>{
+const updateComment = async (content: string) => {
   if (!content.length) {
     notify({
       type: "error",
@@ -154,7 +141,7 @@ const updateComment =  async (content: string) =>{
     return;
   }
   try {
-    if (currentBlogId){
+    if (currentBlogId) {
       await blogStore.updateCurrentComment(content, currentBlogId!, props.commentBody._id)
       await blogStore.getCurrentBlog(currentBlogId!)
     }
@@ -168,4 +155,27 @@ const updateComment =  async (content: string) =>{
     console.log(e)
   }
 }
+
+const toggleLike = async (blogId: TypeBlogId, commentId: string) => {
+  try {
+    await blogStore.switchLikeComment(blogId, commentId);
+    if (currentBlogId) {
+      await blogStore.getCurrentBlog(currentBlogId)
+    }
+
+    notify({
+      type: "success",
+      title: "Success",
+      text: "Liked",
+    });
+
+  } catch (e) {
+    notify({
+      type: "error",
+      title: "Error",
+      text: "error",
+    });
+  }
+}
+
 </script>
