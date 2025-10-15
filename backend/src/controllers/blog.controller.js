@@ -1,5 +1,6 @@
 import BlogModel from "../models/blog.model.js";
 import cloudinary from "../lib/cloudinary.js";
+import {getReceiverSocketId, io} from "../lib/socket.js";
 
 export const getBlogs = async (req, res) => {
   try {
@@ -60,6 +61,28 @@ export const createBlog = async (req, res) => {
       userId,
       previewImage: uploadedImage,
     })
+
+    const receiverSocketId = getReceiverSocketId(userId);
+    const userSocket = io.sockets.sockets.get(receiverSocketId);
+
+    if (userSocket) {
+      // надсилаємо всім, крім нього самого
+      userSocket.broadcast.emit("newBlog", {
+        title: blog.title,
+        authorId: userId,
+      });
+    } else {
+      // fallback — якщо сокет не знайдено, шлемо всім (щоб не втратити подію)
+      io.emit("newBlog", {
+        title: blog.title,
+        authorId: userId,
+      });
+    }
+    // if (receiverSocketId) {
+    //   io.to(receiverSocketId).emit("newBlog", blog.title);
+    // }
+    // io.emit("newBlog", blog.title);
+
 
     return res.status(201).json(blog)
   } catch (e) {

@@ -7,14 +7,12 @@ import {connectDB} from "./db/index.js";
 import blogRoute from "./routes/blog.route.js";
 import authRoute from "./routes/auth.route.js";
 import path from "path";
-// import commentRoute from "./routes/comment.route.js";
-// import likeRoute from "./routes/like.route.js";
+import { app, server } from "./lib/socket.js";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 3333;
 const __dirname = path.resolve();
-const app = express();
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
@@ -61,10 +59,8 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-app.listen(PORT,()=>{
+server.listen(PORT,()=>{
   console.log(`PORT listen on http://localhost:${PORT}`);
   connectDB()
 })
 
-// Tasks
-// add socket.io for adding blog, comments, likes

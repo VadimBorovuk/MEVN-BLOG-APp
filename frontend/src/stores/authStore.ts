@@ -4,22 +4,65 @@ import {getAuthCheck, loginAuth, signupAuth, updateUserAuth} from "../api/authAp
 import type {AxiosResponse} from "axios";
 import type {Router} from "vue-router";
 import type {TypeAuth} from "../types";
+import type {Socket} from "socket.io-client";
+import {io} from "socket.io-client";
+import {useNotification} from "@kyvg/vue3-notification";
+
+const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:2001" : "/";
 
 
 export const useAuthStore = defineStore('authUser', () => {
+  const { notify }  = useNotification();
+
   const authUser = ref<TypeAuth | null>(null);
   const isSigningUp = ref(false);
   const isLoggingIn = ref(false);
   const isCheckingAuth = ref(true);
   const isChecked = ref(false);
   const isChangeProfile = ref(false);
+  const currentAvatarProfile = ref<string>('');
+  const socket = ref<Socket | null>(null);
 
-  const currentAvatarProfile = ref<string>('')
+  const connectSocket = () => {
+    if (!authUser.value || socket.value?.connected) return;
+
+    const socketVal = io(BASE_URL, {
+      query: {
+        userId: authUser.value._id,
+      },
+    });
+    socketVal.connect();
+
+    // set({ socket: socket });
+    socket.value = socketVal;
+
+    socketVal.on("newBlog", ({title, authorId}) => {
+      notify({
+        type: "success",
+        title: `User - ${authorId} create new blog`,
+        text: title,
+      });
+    });
+
+  }
+
+  const disconnectSocket = () => {
+    if (socket.value?.connected) socket.value?.disconnect();
+  }
 
   const checkAuth = async () => {
     try {
       const res = await getAuthCheck();
-      authUser.value = res.data
+      authUser.value = res.data;
+      connectSocket();
+
+      socket.value?.on('getUserData', (userId) => {
+        notify({
+          type: "success",
+          title: "User connected",
+          text: userId,
+        });
+      })
     } catch (error) {
       console.log(error);
       authUser.value = null;
@@ -38,6 +81,7 @@ export const useAuthStore = defineStore('authUser', () => {
         localStorage.setItem("token", res.data.token);
       }
       router.push("/")
+      connectSocket()
     } catch (e) {
       console.log(e)
     } finally {
@@ -54,6 +98,7 @@ export const useAuthStore = defineStore('authUser', () => {
         localStorage.setItem("token", res.data.token);
       }
       router.push({path: '/'})
+      connectSocket()
     } catch (e) {
       console.log(e)
     } finally {
@@ -65,6 +110,7 @@ export const useAuthStore = defineStore('authUser', () => {
     authUser.value = null;
     localStorage.removeItem("token");
     router.push({path: '/login'})
+    disconnectSocket()
   }
 
   const updateProfile = async () => {
@@ -88,6 +134,7 @@ export const useAuthStore = defineStore('authUser', () => {
   }
 
   return {
+    socket,
     authUser,
     isSigningUp,
     isLoggingIn,

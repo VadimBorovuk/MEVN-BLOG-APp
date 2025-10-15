@@ -21,7 +21,7 @@
             </h6>
           </div>
         </div>
-        <div class="dropdown dropdown-end">
+        <div class="dropdown dropdown-end"  v-if="commentBody?.userId?._id === authUserStore.authUser?._id">
           <button tabindex="0" role="button" class="btn btn-ghost btn-circle">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                  viewBox="0 0 24 24" fill="none">
@@ -96,6 +96,7 @@ import {SquarePen, Trash2} from "lucide-vue-next";
 import {useBlogStore} from "../../stores/blogStore.ts";
 import {useNotification} from "@kyvg/vue3-notification";
 import {useRoute} from "vue-router";
+import {useAuthStore} from "../../stores/authStore.ts";
 
 const props = defineProps<{
   commentBody: TypeComment,
@@ -105,6 +106,7 @@ const route = useRoute()
 const currentBlogId = route.params.id;
 const blogStore = useBlogStore();
 const {notify} = useNotification();
+const authUserStore = useAuthStore();
 
 const deleteComment = async () => {
   try {
