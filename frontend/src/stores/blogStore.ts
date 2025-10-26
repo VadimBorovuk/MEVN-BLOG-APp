@@ -2,7 +2,7 @@ import {defineStore} from 'pinia'
 import {ref} from "vue";
 
 // import type {Router} from "vue-router";
-import type {PartialIBlog, PickCreateBlog, TypeAuth, TypeBlog, TypeBlogId} from "../types";
+import type {IBlog, PartialIBlog, PartialTypeBlog, PickCreateBlog, TypeAuth, TypeBlog, TypeBlogId} from "../types";
 import type {AxiosResponse} from "axios";
 import {
   addCommentOfBlog,
@@ -10,6 +10,7 @@ import {
   deleteCommentOfBlog,
   fetchBlogById,
   fetchBlogs,
+  fetchPersonalBlogs,
   likeBlog, likeComment,
   updateBlog, updateCommentOfBlog
 } from "../api/blogsApi.ts";
@@ -18,14 +19,17 @@ import {useAuthStore} from "./authStore.ts";
 export const useBlogStore = defineStore('Blog', () => {
   const authStore = useAuthStore()
 
-  const isLoadingBlogs = ref<boolean>(false)
+  const isLoadingBlogs = ref<boolean>(true)
+  const isLoadingPersonalBlogs = ref<boolean>(true)
   const isLoadingCurrentBlog = ref<boolean>(false)
   const isLoadingCreatingBlog = ref<boolean>(false)
 
-  const blogs = ref<TypeBlog[]>([])
-  const currentBlog = ref<PartialIBlog>({
+  const blogs = ref<PartialIBlog>({})
+  const myPersonalBlogs = ref<PartialIBlog>({})
+  const currentBlog = ref<PartialTypeBlog>({
     title: '',
     content: '',
+    tag: '',
     previewImage: ''
   })
 
@@ -33,6 +37,7 @@ export const useBlogStore = defineStore('Blog', () => {
     title: '',
     content: '',
     previewImage: '',
+    tag: '',
     userId: null
   });
 
@@ -40,15 +45,29 @@ export const useBlogStore = defineStore('Blog', () => {
   const commentVal = ref('');
 
   const getAllBlogs = async () => {
-    isLoadingBlogs.value = true
+    // isLoadingBlogs.value = true
     try {
-      const res: AxiosResponse<TypeBlog[]> = await fetchBlogs();
-      blogs.value = res.data
+      const res: AxiosResponse<IBlog> = await fetchBlogs();
+      blogs.value = res.data;
+
     } catch (e) {
-      blogs.value = []
+      blogs.value = {}
       console.log(e)
     } finally {
       isLoadingBlogs.value = false
+    }
+  }
+
+  const getPersonalBlogs = async (params: any) => {
+    try {
+      const res: AxiosResponse<IBlog> = await fetchPersonalBlogs({...params, userId: authStore.authUser?._id});
+      myPersonalBlogs.value = res.data;
+
+    } catch (e) {
+      myPersonalBlogs.value = {}
+      console.log(e)
+    } finally {
+      isLoadingPersonalBlogs.value = false
     }
   }
 
@@ -97,6 +116,7 @@ export const useBlogStore = defineStore('Blog', () => {
     blogDataCreate.value = {
       title: '',
       content: '',
+      tag: '',
       previewImage: '',
       userId: authStore.authUser
     }
@@ -174,6 +194,9 @@ export const useBlogStore = defineStore('Blog', () => {
     blogs,
     blogDataCreate,
     commentVal,
+    myPersonalBlogs,
+    isLoadingPersonalBlogs,
+    getPersonalBlogs,
     switchLikeBlog,
     switchLikeComment,
     createNewComment,

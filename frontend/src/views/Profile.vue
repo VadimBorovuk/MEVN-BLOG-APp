@@ -85,7 +85,7 @@
 
           <button @click="updateProfileData" class="btn btn-soft btn-success flex items-center w-full">
             <SquarePen/>
-            <span>{{authUserStore.isChangeProfile ? 'Updating...': 'Save'}}</span>
+            <span>{{ authUserStore.isChangeProfile ? 'Updating...' : 'Save' }}</span>
           </button>
         </div>
 
@@ -140,12 +140,14 @@ const updateProfileData = async () => {
   try {
     await authUserStore.updateProfile();
     notify({
+      duration: 4000,
       type: "success",
       title: "Success",
       text: "Update",
     });
   } catch (e) {
     notify({
+      duration: 4000,
       type: "error",
       title: "Error",
       text: "Update",
@@ -153,8 +155,8 @@ const updateProfileData = async () => {
   }
 }
 
-onMounted(()=>{
-  if (authUserStore.authUser){
+onMounted(() => {
+  if (authUserStore.authUser) {
     authUserStore.changeAvatarProfile(authUserStore.authUser?.profilePic)
   }
 })

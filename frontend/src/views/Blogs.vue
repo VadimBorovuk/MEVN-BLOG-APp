@@ -1,20 +1,30 @@
 <template>
   <ScrollProgress/>
-  <div class="container mx-auto px-4 pt-24 pb-10" ref="blogsEndRef">
-    <div class="grid grid-cols-12 gap-8">
-      <template v-if="blogStore.isLoadingBlogs">
-        <BlogSkeleton v-for="i in 6" :key="i" class="col-span-6"/>
-      </template>
+  <div class="container mx-auto px-4 pt-24 pb-8" ref="blogsEndRef">
 
-      <BlogCard
-          v-else
-          v-for="(blog, index) in blogStore.blogs"
-          :blogData="blog"
-          :index="index"
-          :key="blog._id"
-          :class="getColSpanClass(index)"
-      />
+    <BlogPreview/>
+
+    <div class="grid grid-cols-6 grid-rows-5 gap-5">
+      <div class="col-span-4 row-span-5">
+        <template v-if="blogStore.isLoadingBlogs">
+          <BlogSkeleton v-for="i in 6" :key="i" class="col-span-12 mb-6"/>
+        </template>
+
+        <BlogCard
+            v-else
+            v-for="(blog, index) in blogStore.blogs.data"
+            :blogData="blog"
+            :index="index"
+            :key="blog._id"
+            class="col-span-12"
+        />
+      </div>
+
+      <div class="col-span-2 row-span-5 col-start-5">
+          <BlogNavigation/>
+      </div>
     </div>
+
   </div>
 </template>
 
@@ -24,23 +34,20 @@ import {useBlogStore} from "../stores/blogStore.ts";
 import BlogCard from "../components/BlogCard.vue";
 import ScrollProgress from "../components/UI/ScrollProgress.vue";
 import BlogSkeleton from "../components/UI/BlogSkeleton.vue";
+import BlogPreview from "../components/BlogPreview.vue";
+import BlogNavigation from "../components/BlogNavigation.vue";
 
 const blogStore = useBlogStore();
 
 const blogsEndRef = ref<HTMLDivElement | null>(null)
 
-const getColSpanClass = (index: number) => {
-  const spans = ['col-span-6', 'col-span-6', 'col-span-4', 'col-span-4', 'col-span-4'];
-
-  return spans[index % spans.length];
-}
-
 onMounted(async () => {
-  await blogStore.getAllBlogs()
+  await blogStore.getAllBlogs();
+  await blogStore.getPersonalBlogs({limit: 3});
+
 
   if (blogsEndRef.value) {
-    blogsEndRef.value.scrollIntoView({ behavior: "smooth" });
+    blogsEndRef.value.scrollIntoView({behavior: "smooth"});
   }
-
 })
 </script>

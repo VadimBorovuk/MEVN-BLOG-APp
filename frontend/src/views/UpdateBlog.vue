@@ -1,10 +1,10 @@
 <template>
   <div class="container mx-auto px-4 pt-16 pb-10">
 
-    <Breadcrumbs current-crumb="Update blog"/>
+    <Breadcrumbs current-crumb="Update blog" type="update"/>
 
     <template v-if="blogStore.isLoadingCurrentBlog">
-      <FormSkeleton />
+      <FormSkeleton/>
     </template>
 
     <template v-else>
@@ -28,9 +28,23 @@
           </p>
         </fieldset>
 
+        <fieldset class="fieldset mb-3">
+          <legend class="fieldset-legend">Tags</legend>
+          <select class="select select-primary" v-model="blogStore.currentBlog.tag">
+            <option disabled selected>Pick a tags</option>
+            <option
+                v-for="tag in ['sport', 'education', 'news']"
+                :key="tag"
+                :value="tag"
+            >
+              {{ tag }}
+            </option>
+          </select>
+        </fieldset>
+
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Blog content</legend>
-          <Ckeditor v-model="contentModel" placeholder="Enter content" />
+          <Ckeditor v-model="contentModel" placeholder="Enter content"/>
         </fieldset>
 
         <div class="flex justify-between mb-6">
@@ -78,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNotification } from "@kyvg/vue3-notification";
+import {useNotification} from "@kyvg/vue3-notification";
 
 import Ckeditor from "../components/Ckeditor.vue";
 import {useBlogStore} from "../stores/blogStore.js";
@@ -86,14 +100,14 @@ import {SquarePen} from "lucide-vue-next";
 import Breadcrumbs from "../components/UI/Breadcrumbs.vue";
 import {computed, onMounted} from "vue";
 import {useRoute} from "vue-router";
-import BlogCard from "../components/BlogCard.vue";
+import BlogCard from "../components/BlogCardOld.vue";
 import FormSkeleton from "../components/UI/FormSkeleton.vue";
 
 const blogStore = useBlogStore();
 const route = useRoute()
 const currentBlogId = route.params.id
 
-const { notify }  = useNotification()
+const {notify} = useNotification()
 
 const updateNewBlog = async () => {
   try {
@@ -101,12 +115,14 @@ const updateNewBlog = async () => {
     await blogStore.getCurrentBlog(currentBlogId ?? '')
 
     notify({
+      duration: 4000,
       type: "success",
       title: "Success",
       text: "Update",
     });
   } catch (e) {
     notify({
+      duration: 4000,
       type: "error",
       title: "Error",
       text: "Update",

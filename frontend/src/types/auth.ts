@@ -8,3 +8,4 @@ export type TypeAuth = {
 }
 
 export type PartialAuth = Partial<TypeAuth>
+export type PartialFormAuth = Partial<Pick<TypeAuth, 'email' | 'password'| 'fullName'>>

@@ -1,5 +1,6 @@
 import type {TypeAuth} from "./auth.ts";
 
+
 export type TypeLike = {
   userId: TypeAuth | null
 }
@@ -18,12 +19,24 @@ export type TypeBlog = {
   userId: TypeAuth | null
   title: string
   content: string
+  tag: string
   previewImage: string
   comments: TypeComment[]
   likes: TypeLike[]
   createdAt: Date
 }
 
+export interface IBlog {
+  data: TypeBlog[]
+  pagination: {
+    limit: number
+    page: number
+    total: number
+    totalPages: number
+  }
+}
+
 export type TypeBlogId = string | string[]
-export type PartialIBlog = Partial<TypeBlog>
-export type PickCreateBlog = Pick<TypeBlog, 'title' | 'content' | 'previewImage'>
+export type PartialTypeBlog = Partial<TypeBlog>
+export type PartialIBlog = Partial<IBlog>
+export type PickCreateBlog = Pick<TypeBlog, 'title' | 'content' | 'tag' | 'previewImage'>

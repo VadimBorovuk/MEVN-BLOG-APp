@@ -12,6 +12,8 @@
     </div>
   </div>
   <Notifications
+      duration="2000"
+      dangerouslySetInnerHtml
       position="top right" />
 </template>
 

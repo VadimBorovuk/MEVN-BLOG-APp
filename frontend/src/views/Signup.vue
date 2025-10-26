@@ -82,20 +82,22 @@
 
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {useAuthStore} from "../stores/authStore.ts";
 import {ref} from "vue";
 import {useRouter} from "vue-router";
 import AuthImagePattern from "../components/UI/AuthImagePattern.vue";
 import {Lock, Mail, Newspaper} from "lucide-vue-next";
+import type {PartialFormAuth} from "../types";
 
 const router = useRouter()
 
-const formData = ref({})
+const formData = ref<PartialFormAuth>({})
 
 const authUserStore = useAuthStore();
-const handleSubmit = async (e) => {
+const handleSubmit = async (e: SubmitEvent) => {
   e.preventDefault();
+
   await authUserStore.signup(formData.value, router);
 }
 </script>

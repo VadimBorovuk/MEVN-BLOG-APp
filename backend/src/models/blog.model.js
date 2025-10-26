@@ -7,20 +7,24 @@ const blogSchema = new mongoose.Schema(
     {
       title: {
         type: String,
-        required: true,
+        required: true
       },
       content: {
+        type: String,
+        default: ""
+      },
+      tag: {
         type: String,
         default: ""
       },
       userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true,
+        required: true
       },
       previewImage: {
         type: String,
-        default: "",
+        default: ""
       },
       comments: [commentSchema],
       likes: [likeSchema]

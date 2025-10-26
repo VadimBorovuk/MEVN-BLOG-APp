@@ -2,7 +2,7 @@ import express from "express";
 import {
   createBlog,
   deleteBlog,
-  getBlogs, getBlogsById,
+  getBlogs, getBlogsById, getPersonalBlogs,
   updateBlog,
 } from "../controllers/blog.controller.js";
 import {protectRoute} from "../middlewares/auth.middleware.js";
@@ -13,6 +13,7 @@ const router = express.Router();
 
 // blogs
 router.get("/", protectRoute, getBlogs);
+router.get("/personal", protectRoute, getPersonalBlogs);
 router.get("/:blogId", protectRoute, getBlogsById);
 router.post("/create", protectRoute, createBlog);
 router.put("/update/:id", protectRoute, updateBlog);

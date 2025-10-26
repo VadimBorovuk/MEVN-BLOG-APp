@@ -1,4 +1,5 @@
 import BlogModel from "../models/blog.model.js";
+import {getReceiverSocketId, io} from "../lib/socket.js";
 
 export const likeBlog = async (req, res) => {
   try {
@@ -16,6 +17,28 @@ export const likeBlog = async (req, res) => {
       blog.likes.push({ userId });
     }
     await blog.save();
+
+    const populatedBlog = await BlogModel.findById(blogId)
+        .populate("likes.userId", "fullName profilePic")
+        .populate("userId", "fullName profilePic");
+
+    const newLike =
+        populatedBlog.likes[populatedBlog.likes.length - 1] || null;
+
+    // Формуємо payload для фронту
+    const payload = JSON.stringify({
+      blog,
+      like: newLike
+    });
+
+    const receiverSocketId = getReceiverSocketId(userId);
+    const userSocket = io.sockets.sockets.get(receiverSocketId);
+
+    if (userSocket) {
+      userSocket.broadcast.emit("newLikeBlog", payload);
+    } else {
+      io.emit("newLikeBlog", payload);
+    }
     res.json(blog);
   } catch (e) {
     res.status(400).json({ message: e.message });

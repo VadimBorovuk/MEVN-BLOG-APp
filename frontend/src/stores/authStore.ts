@@ -3,16 +3,15 @@ import {ref} from "vue";
 import {getAuthCheck, loginAuth, signupAuth, updateUserAuth} from "../api/authApi.ts";
 import type {AxiosResponse} from "axios";
 import type {Router} from "vue-router";
-import type {TypeAuth} from "../types";
+import type {PartialFormAuth, TypeAuth} from "../types";
 import type {Socket} from "socket.io-client";
 import {io} from "socket.io-client";
 import {useNotification} from "@kyvg/vue3-notification";
 
 const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:2001" : "/";
 
-
 export const useAuthStore = defineStore('authUser', () => {
-  const { notify }  = useNotification();
+  const {notify} = useNotification();
 
   const authUser = ref<TypeAuth | null>(null);
   const isSigningUp = ref(false);
@@ -31,19 +30,46 @@ export const useAuthStore = defineStore('authUser', () => {
         userId: authUser.value._id,
       },
     });
-    socketVal.connect();
 
-    // set({ socket: socket });
+    socketVal.connect();
     socket.value = socketVal;
 
-    socketVal.on("newBlog", ({title, authorId}) => {
+    socketVal.on("newBlog", (data: string) => {
+      const res = JSON.parse(data);
+
       notify({
+        duration: 4000,
         type: "success",
-        title: `User - ${authorId} create new blog`,
-        text: title,
+        title: `User [${res.userId.fullName}] create new post`,
+        text: `<a href="/blogs/${res._id}">${res.title}</a>`,
       });
     });
 
+    socketVal.on("newComment", (data: string) => {
+      const {blog, comment} = JSON.parse(data);
+
+      if (blog.userId === authUser.value?._id) {
+        notify({
+          duration: 4000,
+          type: "success",
+          title: `User [${comment.userId.fullName}] added a comment under your post`,
+          text: `<a href="/blogs/${blog._id}">${comment.content}</a>`,
+        });
+      }
+    });
+
+    socketVal.on("newLikeBlog", (data: string) => {
+      const {blog, like} = JSON.parse(data);
+
+      if (blog.userId === authUser.value?._id) {
+        notify({
+          duration: 4000,
+          type: "success",
+          title: `User [${like.userId.fullName}] liked your post`,
+          text: `<a href="/blogs/${blog._id}">${blog.title}</a>`,
+        });
+      }
+    });
   }
 
   const disconnectSocket = () => {
@@ -58,6 +84,7 @@ export const useAuthStore = defineStore('authUser', () => {
 
       socket.value?.on('getUserData', (userId) => {
         notify({
+          duration: 4000,
           type: "success",
           title: "User connected",
           text: userId,
@@ -72,7 +99,7 @@ export const useAuthStore = defineStore('authUser', () => {
     }
   }
 
-  const login = async (data: TypeAuth, router: Router) => {
+  const login = async (data: PartialFormAuth, router: Router) => {
     isLoggingIn.value = true;
     try {
       const res: AxiosResponse<TypeAuth> = await loginAuth(data);
@@ -89,7 +116,7 @@ export const useAuthStore = defineStore('authUser', () => {
     }
   }
 
-  const signup = async (data: TypeAuth, router: Router) => {
+  const signup = async (data: PartialFormAuth, router: Router) => {
     isSigningUp.value = true;
     try {
       const res: AxiosResponse<TypeAuth> = await signupAuth(data);

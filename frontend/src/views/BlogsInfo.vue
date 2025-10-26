@@ -1,7 +1,7 @@
 <template>
   <ScrollProgress/>
   <div class="container mx-auto px-4 pt-24 pb-10" ref="blogEndRef">
-    <Breadcrumbs :current-crumb="blogStore.currentBlog.title"/>
+    <Breadcrumbs :current-crumb="blogStore.currentBlog.title" type="view"/>
 
     <template v-if="blogStore.isLoadingCurrentBlog">
       <BlogSkeleton/>
@@ -37,7 +37,7 @@
               <button
                   v-if="blogStore.currentBlog._id"
                   @click="toggleLike(blogStore.currentBlog._id)"
-                  class="flex items-center space-x-2 text-gray-600 hover:text-pink-600 transition cursor-pointer"
+                  class="flex items-center space-x-2 hover:text-pink-600 transition cursor-pointer"
               >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -95,6 +95,7 @@ const toggleLike = async (id: string) => {
     }
 
     notify({
+      duration: 4000,
       type: "success",
       title: "Success",
       text: "Liked",
@@ -102,6 +103,7 @@ const toggleLike = async (id: string) => {
 
   } catch (e) {
     notify({
+      duration: 4000,
       type: "error",
       title: "Error",
       text: "error",
@@ -115,7 +117,7 @@ onMounted(() => {
     blogStore.getCurrentBlog(currentBlogId)
   }
   if (blogEndRef.value) {
-    blogEndRef.value.scrollIntoView({ behavior: "smooth" });
+    blogEndRef.value.scrollIntoView({behavior: "smooth"});
   }
 })
 </script>

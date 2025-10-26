@@ -4,18 +4,98 @@ import {getReceiverSocketId, io} from "../lib/socket.js";
 
 export const getBlogs = async (req, res) => {
   try {
+    const { title, startDate, endDate, page = 1, limit = 10 } = req.query;
+
+    const filter = {};
+
+    // 🔹 Фільтр по назві (регулярка, нечутлива до регістру)
+    if (title) {
+      filter.title = { $regex: title, $options: "i" };
+    }
+
+    // 🔹 Фільтр по діапазону дат
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      if (startDate) filter.createdAt.$gte = new Date(startDate);
+      if (endDate) filter.createdAt.$lte = new Date(endDate);
+    }
+
+    // 🔹 Пагінація
+    const skip = (Number(page) - 1) * Number(limit);
+
+    // 🔹 Отримуємо загальну кількість документів для фронтенду
+    const total = await BlogModel.countDocuments(filter);
+
+    // 🔹 Основний запит
     const blogs = await BlogModel
-        .find()
+        .find(filter)
         .populate("userId", "fullName profilePic")
         .populate("comments.userId", "fullName profilePic")
         .populate("comments.likes.userId", "fullName profilePic")
         .populate("likes.userId", "fullName profilePic")
-        .sort({createdAt: -1});
-    return res.status(200).json(blogs)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit));
+
+    // 🔹 Відповідь із метаданими для фронтенду
+    return res.status(200).json({
+      data: blogs,
+      pagination: {
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (e) {
-    res.status(500).json({error: "Internal server error"});
+    console.error(e);
+    res.status(500).json({ error: "Internal server error" });
   }
-}
+};
+
+export const getPersonalBlogs = async (req, res) => {
+  try {
+    const { userId, page = 1, limit = 10 } = req.query;
+
+    const filter = {};
+
+    if (userId) {
+      filter.userId = userId;
+    }
+
+    const skip = (Number(page) - 1) * Number(limit);
+
+    // 🔹 Отримуємо загальну кількість документів для фронтенду
+    const total = await BlogModel.countDocuments(filter);
+
+    // 🔹 Основний запит
+    const blogs = await BlogModel
+        .find(filter)
+        .populate("userId", "fullName profilePic")
+        .populate("comments.userId", "fullName profilePic")
+        .populate("comments.likes.userId", "fullName profilePic")
+        .populate("likes.userId", "fullName profilePic")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit));
+
+    // 🔹 Відповідь із метаданими для фронтенду
+    return res.status(200).json({
+      data: blogs,
+      pagination: {
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
 
 export const getBlogsById = async (req, res) => {
   try {
@@ -41,7 +121,7 @@ export const getBlogsById = async (req, res) => {
 
 export const createBlog = async (req, res) => {
   try {
-    const {title, content, previewImage} = req.body;
+    const {title, content, previewImage, tag} = req.body;
     const userId = req.user._id;
 
     if (!title || title.trim().length < 3) {
@@ -59,30 +139,21 @@ export const createBlog = async (req, res) => {
       title,
       content,
       userId,
+      tag,
       previewImage: uploadedImage,
     })
+    const populatedBlog = await blog.populate("userId", "fullName profilePic");
 
     const receiverSocketId = getReceiverSocketId(userId);
     const userSocket = io.sockets.sockets.get(receiverSocketId);
 
-    if (userSocket) {
-      // надсилаємо всім, крім нього самого
-      userSocket.broadcast.emit("newBlog", {
-        title: blog.title,
-        authorId: userId,
-      });
-    } else {
-      // fallback — якщо сокет не знайдено, шлемо всім (щоб не втратити подію)
-      io.emit("newBlog", {
-        title: blog.title,
-        authorId: userId,
-      });
-    }
-    // if (receiverSocketId) {
-    //   io.to(receiverSocketId).emit("newBlog", blog.title);
-    // }
-    // io.emit("newBlog", blog.title);
+    const payload = JSON.stringify(populatedBlog)
 
+    if (userSocket) {
+      userSocket.broadcast.emit("newBlog", payload);
+    } else {
+      io.emit("newBlog", payload);
+    }
 
     return res.status(201).json(blog)
   } catch (e) {
@@ -93,7 +164,7 @@ export const createBlog = async (req, res) => {
 
 export const updateBlog = async (req, res) => {
   try {
-    const {title, content, previewImage} = req.body;
+    const {title, content, tag, previewImage} = req.body;
     const blogId = req.params.id;
     const userId = req.user._id;
 
@@ -119,6 +190,7 @@ export const updateBlog = async (req, res) => {
 
     blog.title = title;
     blog.content = content;
+    blog.tag = tag;
 
     const updatedBlog = await blog.save();
     return res.status(200).json(updatedBlog);

@@ -1,17 +1,40 @@
 import BlogModel from "../models/blog.model.js";
+import {getReceiverSocketId, io} from "../lib/socket.js";
 
 export const addComment = async (req, res) => {
   try {
     const {blogId} = req.params;
+    const userId = req.user._id;
     const blog = await BlogModel.findById(blogId);
     if (!blog) return res.status(404).json({ message: "Блог не знайдено" });
 
     blog.comments.push({
       content: req.body.content,
-      userId: req.user._id
+      userId
     });
 
     await blog.save();
+
+    const populatedBlog = await BlogModel.findById(blogId)
+        .populate("comments.userId", "fullName profilePic")
+        .populate("userId", "fullName profilePic");
+
+    const newComment = populatedBlog.comments[populatedBlog.comments.length - 1];
+
+    const receiverSocketId = getReceiverSocketId(userId);
+    const userSocket = io.sockets.sockets.get(receiverSocketId);
+
+    const payload = JSON.stringify({
+      blog,
+      comment: newComment,
+    });
+
+    if (userSocket) {
+      userSocket.broadcast.emit("newComment", payload);
+    } else {
+      io.emit("newComment", payload);
+    }
+
     res.status(201).json(blog);
   } catch (err) {
     res.status(400).json({ message: err.message });

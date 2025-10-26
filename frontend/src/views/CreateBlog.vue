@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto px-4 pt-16 pb-10" ref="formEndRef">
 
-    <Breadcrumbs current-crumb="Create blog"/>
+    <Breadcrumbs current-crumb="Create blog" type="create"/>
 
     <form @submit.prevent="createNewBlog">
 
@@ -21,6 +21,20 @@
         <p class="validator-hint">
           Must be 3 to 30 characters
         </p>
+      </fieldset>
+
+      <fieldset class="fieldset mb-3">
+        <legend class="fieldset-legend">Tags</legend>
+        <select class="select select-primary" v-model="blogStore.blogDataCreate.tag">
+          <option disabled selected>Pick a tags</option>
+          <option
+              v-for="tag in ['sport', 'education', 'news']"
+              :key="tag"
+              :value="tag"
+          >
+            {{ tag }}
+          </option>
+        </select>
       </fieldset>
 
       <fieldset class="fieldset mb-3">
@@ -80,11 +94,11 @@ import Breadcrumbs from "../components/UI/Breadcrumbs.vue";
 import {useRouter} from "vue-router";
 import {onMounted, ref} from "vue";
 import {useNotification} from "@kyvg/vue3-notification";
-import BlogCard from "../components/BlogCard.vue";
+import BlogCard from "../components/BlogCardOld.vue";
 
 const blogStore = useBlogStore();
 const router = useRouter();
-const { notify }  = useNotification();
+const {notify} = useNotification();
 
 const formEndRef = ref<HTMLDivElement | null>(null);
 
@@ -92,6 +106,7 @@ const createNewBlog = async () => {
   try {
     await blogStore.addBlog();
     notify({
+      duration: 4000,
       type: "success",
       title: "Success",
       text: "Create",
@@ -99,6 +114,7 @@ const createNewBlog = async () => {
     await router.push('/')
   } catch (e) {
     notify({
+      duration: 4000,
       type: "error",
       title: "Error",
       text: "error",
@@ -122,7 +138,7 @@ const handleImageUpload = async (e: Event) => {
 onMounted(() => {
   blogStore.clearParamsBlog()
   if (formEndRef.value) {
-    formEndRef.value.scrollIntoView({ behavior: "smooth" });
+    formEndRef.value.scrollIntoView({behavior: "smooth"});
   }
 })
 </script>

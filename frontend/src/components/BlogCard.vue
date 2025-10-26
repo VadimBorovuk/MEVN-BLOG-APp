@@ -1,189 +1,97 @@
 <template>
-  <article
-      class="flex flex-col relative p-6 shadow-lg transition duration-300 group transform hover:-translate-y-2 hover:shadow-2xl rounded-2xl card"
-  >
-    <div class="flex-2 relative z-10 mb-4 rounded-2xl overflow-hidden">
+  <div
+      class="bg-base-300 grid grid-cols-3 grid-rows-1 gap-4 relative p-6 shadow-lg transition duration-300 transform rounded-2xl mb-6 min-h-[350px]">
+    <div class="relative z-10 rounded-2xl overflow-hidden group">
       <img
-          class="rounded-2xl w-full object-cover transition-transform duration-300 transform group-hover:scale-105"
-          :class="getColSpanClass(index)"
+          class="h-full rounded-2xl w-full object-cover transition-transform duration-300 transform group-hover:scale-105"
           :src="blogData?.previewImage"
           alt=""
       />
 
-      <div
-          v-if="blogData?.userId?._id === authUserStore.authUser?._id"
-          class="absolute top-3 right-3 inline-flex items-center rounded-lg bg-white p-1 shadow-md z-20 cursor-pointer dropdown dropdown-end">
-        <button tabindex="0" role="button" class="btn btn-ghost btn-circle">
-          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"
-               viewBox="0 0 24 24" fill="none">
-            <path
-                d="M12.0161 16.9893V17.0393M12.0161 11.9756V12.0256M12.0161 6.96191V7.01191"
-                stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-          </svg>
-        </button>
-        <ul tabindex="0"
-            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-44 p-2 shadow">
-          <li>
-            <router-link
-                :to="`/update-blog/${blogData?._id}`"
-            >
-              <SquarePen class="size-4"/>
-              Update
-            </router-link>
-          </li>
-          <li @click="deleteBlog">
-            <div class="flex items-center">
-              <Trash2 class="size-4"/>
-              <span>Delete</span>
-            </div>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Лайки -->
-      <div v-if="blogData?.likes?.length" tabindex="0"
-           class="dropdown absolute bottom-3 left-3 inline-flex items-center rounded-lg bg-white p-2 shadow-md z-30 cursor-pointer">
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="h-5 w-5 text-red-700"
-        >
-          <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-          />
-        </svg>
-        <div class="m-1">{{ blogData?.likes?.length }}</div>
-
-        <ul v-if="blogData?.likes?.length" tabindex="0"
-            class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-          <li v-for="likeItem in blogData?.likes">
-            {{ likeItem?.userId?.fullName }}
-          </li>
-        </ul>
-      </div>
-
-      <!--  comments    -->
-      <div v-if="blogData?.comments?.length" tabindex="1"
-           class="dropdown absolute bottom-3 left-18 inline-flex items-center rounded-lg bg-white p-2 shadow-md z-20 cursor-pointer">
-        <MessageCircle/>
-        <div class="m-1">{{ blogData?.comments?.length }}</div>
-      </div>
-
       <!-- Оверлей на ховер -->
       <router-link
-          class="flex justify-center items-center bg-red-400 bg-opacity-80 z-10 absolute top-0 left-0 w-full h-full text-white rounded-2xl opacity-0 transition-all duration-300 transform group-hover:scale-105 text-xl group-hover:opacity-100 cursor-pointer"
+          target="_blank"
+          class="flex justify-center items-center bg-black/70 bg-opacity-80 z-10 absolute top-0 left-0 w-full h-full text-white rounded-2xl opacity-0 transition-all duration-300 transform hover:scale-105 text-xl hover:opacity-100 cursor-pointer"
           :to="`/blogs/${blogData?._id}`">
         <span>Read article</span>
         <ChevronsRight class="mt-1"/>
       </router-link>
     </div>
 
-    <div class="flex-1 flex flex-col justify-between">
+    <div class="col-span-2">
+
 
       <!-- Заголовок -->
-      <div class="">
-        <h3 class="relative z-10 font-medium text-xl leading-8">
-          <router-link
-              :to="`/blogs/${blogData?._id}`"
-              class="relative group-hover:text-red-400 transition-colors duration-200 line-clamp-3"
-          >
-            {{ blogData?.title }}
-          </router-link>
-        </h3>
-        <!--        <div class="text-gray-500 line-clamp-4"-->
-        <!--             v-html="blogData?.content"/>-->
-        <!--          {{-->
-        <!--            blogData?.content && blogData?.content.length > 250 ? blogData?.content.substring(0, 250) + "..." : blogData?.content-->
-        <!--          }}-->
-      </div>
-
-
-      <!-- Автор і дата -->
-      <div>
-        <div class="divider"></div>
-        <div class="relative z-10 flex justify-between items-start w-full pb-4">
-
-          <div class="flex items-center">
-            <div class="pr-3">
-              <img
-                  class="h-12 w-12 rounded-full object-cover"
-                  :src="blogData?.userId?.profilePic"
-                  alt="avatar"
-              />
+      <div class="h-full flex flex-col justify-between">
+        <div>
+          <div class="flex flex-wrap mb-3">
+            <div
+                v-if="blogData?.tag"
+                class="transition bg-base-100 text-[.875rem] mt-[0] mr-[8px] mb-[12px] ml-[0] flex items-center h-[32px] leading-[32px] px-[12px] py-[0] rounded-xl relative cursor-pointer hover:bg-base-200"
+            >
+              <span class="w-[8px] h-[8px] mr-[6px] rounded-full" :class="useTagColor(blogData?.tag)"/>
+              <span>{{blogData?.tag.toLocaleUpperCase()}}</span>
             </div>
-            <div class="flex flex-1">
-              <div>
-                <p class="text-sm font-semibold">{{ blogData?.userId?.fullName }}</p>
-                <p class="text-sm text-gray-500">Published on {{ useDate(blogData?.createdAt!) }}</p>
+
+          </div>
+          <h3 class="relative z-10 font-medium text-3xl leading-8">
+            <router-link
+                :to="`/blogs/${blogData?._id}`"
+                target="_blank"
+                class="relative hover:text-red-400 transition-colors duration-200 line-clamp-2"
+            >
+              {{ blogData?.title }}
+            </router-link>
+          </h3>
+          <div class="text-gray-400 line-clamp-3 leading-7 my-4 overflow-hidden max-h-[84px]"
+               v-html="blogData?.content"/>
+        </div>
+
+        <div>
+          <div class="divider mb-0"></div>
+          <div class="relative z-10 flex justify-between items-start w-full">
+
+            <div class="flex items-center">
+              <div class="flex flex-1">
+                <div>
+                  <div class="flex items-center text-sm font-semibold text-gray-400 mb-2">
+                    <User class="mr-2"/>
+                    <span class="text-lg">{{ blogData?.userId?.fullName }}</span>
+                  </div>
+                  <p class="text-sm text-gray-500">Published on {{ useDate(blogData?.createdAt!, 'MMM D, YYYY') }}</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="flex justify-end">
-            <div class="text-sm flex items-center text-gray-500">
-              <span class="mr-2">
-                {{
-                  !useDiff(blogData?.createdAt!) ? 'Today' :
-                      useDiff(blogData?.createdAt!) === 1 ? `${useDiff(blogData?.createdAt!)} day ago` : `${useDiff(blogData?.createdAt!)} days ago`
-                }}
-              </span>
-              <Clock/>
+            <div class="flex justify-end">
+              <div class="text-sm flex items-center text-gray-500">
+                    <span class="mr-2">
+                      {{
+                        !useDiff(blogData?.createdAt!) ? 'Today' :
+                            useDiff(blogData?.createdAt!) === 1 ? `${useDiff(blogData?.createdAt!)} day ago` : `${useDiff(blogData?.createdAt!)} days ago`
+                      }}
+                    </span>
+                <Clock class="h-4 w-4"/>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </article>
+  </div>
 </template>
 
 <script setup lang="ts">
-import type {PartialIBlog} from "../types";
-import {useAuthStore} from "../stores/authStore.ts";
+import type {PartialTypeBlog} from "../types";
 import {useDate, useDiff} from "../composables/useDateFormat.ts";
-import {ChevronsRight, Clock, MessageCircle, SquarePen, Trash2} from 'lucide-vue-next';
-import {useBlogStore} from "../stores/blogStore.ts";
-import {useNotification} from "@kyvg/vue3-notification";
+import {ChevronsRight, Clock, User} from 'lucide-vue-next';
+import {useTagColor} from "../composables/useTagOfBlog.ts";
 
-const {notify} = useNotification();
-const authUserStore = useAuthStore();
-const blogStore = useBlogStore();
-
-const getColSpanClass = (index: number) => {
-  const spans = ['min-h-90 max-h-90', 'min-h-90 max-h-90', 'min-h-70 max-h-70', 'min-h-70 max-h-70', 'min-h-70 max-h-70'];
-
-  return spans[index % spans.length];
-}
-
-const props = defineProps<{
-  blogData?: PartialIBlog | null
+defineProps<{
+  blogData?: PartialTypeBlog | null
   index: number
 }>()
 
-const deleteBlog = async () => {
-  try {
-    if (props.blogData){
-      await blogStore.deleteCurrentBlog(props.blogData?._id ?? '')
-      await blogStore.getAllBlogs()
-    }
-
-    notify({
-      type: "success",
-      title: "Success",
-      text: "delete blog",
-    });
-  } catch (e) {
-    notify({
-      type: "error",
-      title: "Error",
-      text: "delete blog",
-    });
-  }
-}
-
 </script>
+
 

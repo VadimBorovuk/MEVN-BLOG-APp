@@ -1,10 +1,18 @@
 import {axiosInstance} from "../utils/axios.ts";
-import type {PartialIBlog, PickCreateBlog, TypeBlogId} from "../types";
+import type {PartialTypeBlog, PickCreateBlog, TypeBlogId} from "../types";
 
 export function fetchBlogs() {
   return axiosInstance({
     url: `/blogs`,
     method: 'get'
+  })
+}
+
+export function fetchPersonalBlogs(params: {userId?: string}) {
+  return axiosInstance({
+    url: `/blogs/personal`,
+    method: 'get',
+    params
   })
 }
 
@@ -23,7 +31,7 @@ export function createBlog(data: PickCreateBlog) {
   })
 }
 
-export function updateBlog(data: PartialIBlog, id: TypeBlogId) {
+export function updateBlog(data: PartialTypeBlog, id: TypeBlogId) {
   return axiosInstance({
     url: `/blogs/update/${id}`,
     method: 'put',

@@ -1,6 +1,6 @@
 <template>
   <div
-      class="w-full p-6 bg-white rounded-2xl border border-gray-200 flex-col justify-start items-start gap-8 flex">
+      class="w-full p-6 bg-base-200 rounded-2xl border border-gray-200 flex-col justify-start items-start gap-8 flex">
     <div class="w-full flex-col justify-center items-start gap-3.5 flex">
       <div class="w-full justify-between items-center inline-flex">
         <div class="justify-start items-center gap-2.5 flex">
@@ -11,7 +11,7 @@
                  alt="Jenny wilson image"/>
           </div>
           <div class="flex-col justify-start items-start gap-1 inline-flex">
-            <h5 class="text-gray-900 text-sm font-semibold leading-snug">
+            <h5 class="text-sm font-semibold leading-snug">
               {{ commentBody?.userId?.fullName }}
             </h5>
             <h6 class="text-gray-500 text-xs font-normal leading-5">
@@ -21,14 +21,9 @@
             </h6>
           </div>
         </div>
-        <div class="dropdown dropdown-end"  v-if="commentBody?.userId?._id === authUserStore.authUser?._id">
+        <div class="dropdown dropdown-end" v-if="commentBody?.userId?._id === authUserStore.authUser?._id">
           <button tabindex="0" role="button" class="btn btn-ghost btn-circle">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                 viewBox="0 0 24 24" fill="none">
-              <path
-                  d="M12.0161 16.9893V17.0393M12.0161 11.9756V12.0256M12.0161 6.96191V7.01191"
-                  stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-            </svg>
+            <EllipsisVertical class="size-4"/>
           </button>
           <ul tabindex="0"
               class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-44 p-2 shadow">
@@ -47,7 +42,7 @@
           </ul>
         </div>
       </div>
-      <p v-if="!commentBody.is_updated" class="text-gray-800 text-sm font-normal leading-snug">
+      <p v-if="!commentBody.is_updated" class="text-sm font-normal leading-snug">
         {{ commentBody.content }}
       </p>
       <!--      -->
@@ -56,7 +51,7 @@
           rows="5"
           @keypress.enter.prevent="updateComment(commentBody.content)"
           v-model="commentBody.content"
-          class="w-full py-3 px-5 rounded-lg border border-gray-300 bg-white shadow-[0px_1px_2px_0px_rgba(16,_24,_40,_0.05)] focus:outline-none text-gray-900 placeholder-gray-400 text-lg font-normal leading-relaxed"
+          class="w-full py-3 px-5 rounded-lg border border-gray-300 bg-base-200 shadow-[0px_1px_2px_0px_rgba(16,_24,_40,_0.05)] focus:outline-none placeholder-gray-400 text-lg font-normal leading-relaxed"
           placeholder="Write comments here...."/>
     </div>
     <div class="w-full justify-between items-center inline-flex">
@@ -92,7 +87,7 @@
 import {defineProps} from "vue";
 import type {TypeBlogId, TypeComment} from "../../types";
 import {useDate} from "../../composables/useDateFormat.ts";
-import {SquarePen, Trash2} from "lucide-vue-next";
+import {EllipsisVertical, SquarePen, Trash2} from "lucide-vue-next";
 import {useBlogStore} from "../../stores/blogStore.ts";
 import {useNotification} from "@kyvg/vue3-notification";
 import {useRoute} from "vue-router";
@@ -116,12 +111,14 @@ const deleteComment = async () => {
     }
 
     notify({
+      duration: 4000,
       type: "success",
       title: "Success",
       text: "delete comment",
     });
   } catch (e) {
     notify({
+      duration: 4000,
       type: "error",
       title: "Error",
       text: "delete comment",
@@ -136,6 +133,7 @@ const handleComment = (commentData: TypeComment) => {
 const updateComment = async (content: string) => {
   if (!content.length) {
     notify({
+      duration: 4000,
       type: "error",
       title: "error",
       text: "Content not be empty",
@@ -149,6 +147,7 @@ const updateComment = async (content: string) => {
     }
 
     notify({
+      duration: 4000,
       type: "success",
       title: "Success",
       text: "updated comment",
@@ -166,6 +165,7 @@ const toggleLike = async (blogId: TypeBlogId, commentId: string) => {
     }
 
     notify({
+      duration: 4000,
       type: "success",
       title: "Success",
       text: "Liked",
@@ -173,6 +173,7 @@ const toggleLike = async (blogId: TypeBlogId, commentId: string) => {
 
   } catch (e) {
     notify({
+      duration: 4000,
       type: "error",
       title: "Error",
       text: "error",

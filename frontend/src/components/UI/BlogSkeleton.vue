@@ -1,8 +1,5 @@
 <template>
   <div class="flex flex-col gap-4">
-    <div class="skeleton h-80 w-full"></div>
-    <div class="skeleton h-4 w-28"></div>
-    <div class="skeleton h-4 w-full"></div>
-    <div class="skeleton h-4 w-full"></div>
+    <div class="skeleton h-86 w-full bg-base-300"></div>
   </div>
 </template>

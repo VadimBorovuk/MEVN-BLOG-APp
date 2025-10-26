@@ -3,7 +3,7 @@
     <div class="max-w-md text-center">
       <div class="grid grid-cols-3 gap-3 mb-8">
         <div
-            v-for="(item, i) in patternItems"
+            v-for="(_, i) in patternItems"
             :key="i"
             class="aspect-square rounded-2xl bg-primary/10"
             :class="{ 'animate-pulse': i % 2 === 0 }"
@@ -17,7 +17,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { defineProps } from 'vue';
 const patternItems = Array(9).fill(null);
 defineProps({
