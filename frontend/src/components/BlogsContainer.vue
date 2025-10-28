@@ -21,6 +21,11 @@
         >
           Show more
         </button>
+        <div v-if="blogStore.isLoadingMoreBlogs" class="w-full flex justify-center items-center">
+          <Loader class="size-10 animate-spin" />
+        </div>
+
+
       </div>
     </div>
 
@@ -39,6 +44,7 @@ import BlogSkeleton from "./UI/BlogSkeleton.vue";
 import {useBlogStore} from "../stores/blogStore.ts";
 import {useRoute} from "vue-router";
 import {watch} from "vue";
+import {Loader} from "lucide-vue-next";
 
 const route = useRoute();
 const blogStore = useBlogStore();

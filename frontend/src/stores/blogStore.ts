@@ -29,6 +29,7 @@ export const useBlogStore = defineStore('Blog', () => {
 
   const isLoadingBlogs = ref<boolean>(true)
   const isLoadingPersonalBlogs = ref<boolean>(true)
+  const isLoadingMoreBlogs = ref<boolean>(false)
   const isLoadingCurrentBlog = ref<boolean>(false)
   const isLoadingCreatingBlog = ref<boolean>(false)
 
@@ -92,6 +93,7 @@ export const useBlogStore = defineStore('Blog', () => {
   }
 
   const loadMoreBlogs = async (params: TypeQuery) => {
+    isLoadingMoreBlogs.value = true
     try {
       const res: AxiosResponse<IBlog> = await fetchBlogs(params);
       const result = res.data;
@@ -99,6 +101,7 @@ export const useBlogStore = defineStore('Blog', () => {
     } catch (e) {
       console.log(e)
     } finally {
+      isLoadingMoreBlogs.value = false
     }
   }
 
@@ -111,7 +114,7 @@ export const useBlogStore = defineStore('Blog', () => {
       myPersonalBlogs.value = {}
       console.log(e)
     } finally {
-      isLoadingPersonalBlogs.value = false // remove
+      isLoadingPersonalBlogs.value = false
     }
   }
 
@@ -241,6 +244,7 @@ export const useBlogStore = defineStore('Blog', () => {
     myPersonalBlogs,
     isLoadingPersonalBlogs,
     queryParams,
+    isLoadingMoreBlogs,
     applyQueryTag,
     applyQueryParams,
     incrementPage,
