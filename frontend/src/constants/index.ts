@@ -1,4 +1,9 @@
-export const THEMES = [
-  "light",
-  "dark"
+export const TAGS = [
+  "sport",
+  "news",
+  "food",
+  "technology",
+  "lifestyle",
+  "health"
 ];
+

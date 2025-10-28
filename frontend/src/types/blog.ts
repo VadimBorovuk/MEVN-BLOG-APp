@@ -1,5 +1,11 @@
 import type {TypeAuth} from "./auth.ts";
 
+export type TypeQuery = {
+  limit?: number
+  page?: number
+  tag?: string
+  title?: string
+}
 
 export type TypeLike = {
   userId: TypeAuth | null

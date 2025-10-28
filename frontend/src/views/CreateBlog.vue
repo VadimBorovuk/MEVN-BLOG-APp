@@ -28,7 +28,7 @@
         <select class="select select-primary" v-model="blogStore.blogDataCreate.tag">
           <option disabled selected>Pick a tags</option>
           <option
-              v-for="tag in ['sport', 'education', 'news']"
+              v-for="tag in TAGS"
               :key="tag"
               :value="tag"
           >
@@ -95,6 +95,7 @@ import {useRouter} from "vue-router";
 import {onMounted, ref} from "vue";
 import {useNotification} from "@kyvg/vue3-notification";
 import BlogCard from "../components/BlogCardOld.vue";
+import {TAGS} from "../constants"
 
 const blogStore = useBlogStore();
 const router = useRouter();
@@ -111,7 +112,7 @@ const createNewBlog = async () => {
       title: "Success",
       text: "Create",
     });
-    await router.push('/')
+    await router.push({path: '/', query: {}})
   } catch (e) {
     notify({
       duration: 4000,

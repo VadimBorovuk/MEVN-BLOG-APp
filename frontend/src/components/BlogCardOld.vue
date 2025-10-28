@@ -163,7 +163,7 @@ const deleteBlog = async () => {
   try {
     if (props.blogData){
       await blogStore.deleteCurrentBlog(props.blogData?._id ?? '')
-      await blogStore.getAllBlogs()
+      // await blogStore.getAllBlogs()
     }
 
     notify({

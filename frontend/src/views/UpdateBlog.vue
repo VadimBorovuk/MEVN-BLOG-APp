@@ -33,7 +33,7 @@
           <select class="select select-primary" v-model="blogStore.currentBlog.tag">
             <option disabled selected>Pick a tags</option>
             <option
-                v-for="tag in ['sport', 'education', 'news']"
+                v-for="tag in TAGS"
                 :key="tag"
                 :value="tag"
             >
@@ -102,6 +102,7 @@ import {computed, onMounted} from "vue";
 import {useRoute} from "vue-router";
 import BlogCard from "../components/BlogCardOld.vue";
 import FormSkeleton from "../components/UI/FormSkeleton.vue";
+import {TAGS} from "../constants";
 
 const blogStore = useBlogStore();
 const route = useRoute()

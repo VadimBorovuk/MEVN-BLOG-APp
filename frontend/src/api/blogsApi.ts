@@ -1,10 +1,11 @@
 import {axiosInstance} from "../utils/axios.ts";
-import type {PartialTypeBlog, PickCreateBlog, TypeBlogId} from "../types";
+import type {PartialTypeBlog, PickCreateBlog, TypeBlogId, TypeQuery} from "../types";
 
-export function fetchBlogs() {
+export function fetchBlogs(params: TypeQuery) {
   return axiosInstance({
     url: `/blogs`,
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 

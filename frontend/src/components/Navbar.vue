@@ -6,7 +6,8 @@
     <div class="container mx-auto px-4 h-16">
       <div class="flex items-center justify-between h-full">
         <div class="flex items-center gap-8">
-          <router-link to="/" class="flex items-center gap-2.5 hover:opacity-80 transition-all">
+          <router-link to="/" class="flex items-center gap-2.5 hover:opacity-80 transition-all"
+                       @click="refreshBlogs">
             <div class="size-9 rounded-lg bg-primary/10 flex items-center justify-center">
               <Newspaper class="w-5 h-5 text-primary"/>
             </div>
@@ -52,17 +53,7 @@
             </div>
 
           </div>
-          <!--                <button-->
-          <!--                    v-for="t in THEMES"-->
-          <!--                    :key="t"-->
-          <!--                    :class="[-->
-          <!--        'group flex flex-col items-center gap-1.5 p-2 rounded-lg transition-colors',-->
-          <!--        themeStore.theme === t ? 'bg-base-200' : 'hover:bg-base-200/50'-->
-          <!--      ]"-->
-          <!--                    @click="themeStore.setTheme(t)"-->
-          <!--                >-->
 
-          <!--                </button>-->
           <label class="flex cursor-pointer gap-2 ml-4">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -113,11 +104,20 @@ import {useRouter} from "vue-router";
 import {Newspaper, LogOut, DiamondPlus} from "lucide-vue-next";
 import {useThemeStore} from "../stores/themeStore.js";
 import {onMounted} from "vue";
+import {useBlogStore} from "../stores/blogStore.ts";
 
 
 const router = useRouter()
 const authUserStore = useAuthStore()
 const themeStore = useThemeStore()
+const blogStore = useBlogStore()
+
+const refreshBlogs = async () => {
+  blogStore.isLoadingBlogs = true;
+  blogStore.isLoadingPersonalBlogs = true;
+  await blogStore.getAllBlogs({page: 1, limit: 10});
+  await blogStore.getPersonalBlogs({limit: 3});
+}
 
 const handleTheme = (event: Event) => {
   const target = event.target as HTMLInputElement

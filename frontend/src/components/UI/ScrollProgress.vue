@@ -3,15 +3,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 
 const scrollProgress = ref(0);
+const route = useRoute();
 
 const updateScrollProgress = () => {
   const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
   const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
   scrollProgress.value = (scrollTop / scrollHeight) * 100;
 };
+
+// 🟢 при зміні query
+watch(() => route.query, () => {
+  scrollProgress.value = 0;
+  window.scrollTo({ top: 0, behavior: 'instant' }); // або smooth, якщо хочеш плавно
+});
 
 onMounted(() => {
   window.addEventListener('scroll', updateScrollProgress);
@@ -21,6 +29,7 @@ onUnmounted(() => {
   window.removeEventListener('scroll', updateScrollProgress);
 });
 </script>
+
 
 <style scoped>
 .scroll-progress-bar {

@@ -4,21 +4,18 @@ import {getReceiverSocketId, io} from "../lib/socket.js";
 
 export const getBlogs = async (req, res) => {
   try {
-    const { title, startDate, endDate, page = 1, limit = 10 } = req.query;
+    const { title, tag, page = 1, limit = 10 } = req.query;
 
     const filter = {};
 
-    // 🔹 Фільтр по назві (регулярка, нечутлива до регістру)
     if (title) {
       filter.title = { $regex: title, $options: "i" };
     }
 
-    // 🔹 Фільтр по діапазону дат
-    if (startDate || endDate) {
-      filter.createdAt = {};
-      if (startDate) filter.createdAt.$gte = new Date(startDate);
-      if (endDate) filter.createdAt.$lte = new Date(endDate);
+    if (tag) {
+      filter.tag = { $regex: tag, $options: "i" };
     }
+
 
     // 🔹 Пагінація
     const skip = (Number(page) - 1) * Number(limit);

@@ -1,19 +1,59 @@
 export const useTagColor = (tagName: string) => {
   if (!tagName) return null;
 
-  let res;
+  let res = {
+    class: "",
+    url: ""
+  };
+
   switch (tagName) {
     case 'sport':
-      res = 'bg-blue-500';
+      res = {
+        class: 'bg-blue-500',
+        url: '/sportBack.jpg'
+      };
       return res
     case 'education':
-      res = 'bg-pink-500';
+      res = {
+        class: 'bg-pink-500',
+        url: '/newsBack.png'
+      };
+      return res
+    case 'food':
+      res = {
+        class: 'bg-purple-500',
+        url: '/foodBack.jpg'
+      };
       return res
     case 'news':
-      res = 'bg-red-500';
+      res = {
+        class: 'bg-blue-500',
+        url: '/newsBack.png'
+      };
+      return res
+    case 'technology':
+      res = {
+        class: 'bg-yellow-500',
+        url: '/techBack.jpeg'
+      };
+      return res
+    case 'lifestyle':
+      res = {
+        class: 'bg-amber-500',
+        url: '/lifeBack.jpeg'
+      };
+      return res
+    case 'health':
+      res = {
+        class: 'bg-green-500',
+        url: '/healthBack.jpeg'
+      };
       return res
     default:
-      res = 'bg-green-500';
+      res = {
+        class: 'bg-purple-500',
+        url: '/newsBack.png'
+      };
   }
   return res;
 }

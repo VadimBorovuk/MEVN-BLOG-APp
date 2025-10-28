@@ -1,8 +1,16 @@
 import {defineStore} from 'pinia'
 import {ref} from "vue";
 
-// import type {Router} from "vue-router";
-import type {IBlog, PartialIBlog, PartialTypeBlog, PickCreateBlog, TypeAuth, TypeBlog, TypeBlogId} from "../types";
+import type {
+  IBlog,
+  PartialIBlog,
+  PartialTypeBlog,
+  PickCreateBlog,
+  TypeAuth,
+  TypeBlog,
+  TypeBlogId,
+  TypeQuery
+} from "../types";
 import type {AxiosResponse} from "axios";
 import {
   addCommentOfBlog,
@@ -24,6 +32,12 @@ export const useBlogStore = defineStore('Blog', () => {
   const isLoadingCurrentBlog = ref<boolean>(false)
   const isLoadingCreatingBlog = ref<boolean>(false)
 
+
+  const queryParams = ref<TypeQuery>({
+    page: 1,
+    limit: 10
+  })
+
   const blogs = ref<PartialIBlog>({})
   const myPersonalBlogs = ref<PartialIBlog>({})
   const currentBlog = ref<PartialTypeBlog>({
@@ -33,7 +47,7 @@ export const useBlogStore = defineStore('Blog', () => {
     previewImage: ''
   })
 
-  const blogDataCreate = ref<PickCreateBlog & {userId: TypeAuth | null}>({
+  const blogDataCreate = ref<PickCreateBlog & { userId: TypeAuth | null }>({
     title: '',
     content: '',
     previewImage: '',
@@ -44,21 +58,51 @@ export const useBlogStore = defineStore('Blog', () => {
 
   const commentVal = ref('');
 
-  const getAllBlogs = async () => {
-    // isLoadingBlogs.value = true
+  const incrementPage = () =>{
+    queryParams.value.page && queryParams.value.page++;
+  }
+
+  const applyQueryTag = (key: string, value: string) =>{
+    switch (key) {
+      case 'tag':
+        queryParams.value.tag = value
+        queryParams.value.page = 1
+        queryParams.value.limit = 10
+    }
+  }
+
+  const getAllBlogs = async (params: TypeQuery) => {
     try {
-      const res: AxiosResponse<IBlog> = await fetchBlogs();
+      const res: AxiosResponse<IBlog> = await fetchBlogs(params);
       blogs.value = res.data;
 
     } catch (e) {
       blogs.value = {}
       console.log(e)
     } finally {
-      isLoadingBlogs.value = false
+      isLoadingBlogs.value = false;
     }
   }
 
-  const getPersonalBlogs = async (params: any) => {
+  const applyQueryParams = (tag: string) =>{
+    queryParams.value = !tag ? {page: 1, limit: 10} :
+        {page: 1, limit: 10, tag}
+
+    return queryParams.value
+  }
+
+  const loadMoreBlogs = async (params: TypeQuery) => {
+    try {
+      const res: AxiosResponse<IBlog> = await fetchBlogs(params);
+      const result = res.data;
+      blogs.value.data?.push(...result.data)
+    } catch (e) {
+      console.log(e)
+    } finally {
+    }
+  }
+
+  const getPersonalBlogs = async (params: TypeQuery) => {
     try {
       const res: AxiosResponse<IBlog> = await fetchPersonalBlogs({...params, userId: authStore.authUser?._id});
       myPersonalBlogs.value = res.data;
@@ -67,7 +111,7 @@ export const useBlogStore = defineStore('Blog', () => {
       myPersonalBlogs.value = {}
       console.log(e)
     } finally {
-      isLoadingPersonalBlogs.value = false
+      isLoadingPersonalBlogs.value = false // remove
     }
   }
 
@@ -196,6 +240,11 @@ export const useBlogStore = defineStore('Blog', () => {
     commentVal,
     myPersonalBlogs,
     isLoadingPersonalBlogs,
+    queryParams,
+    applyQueryTag,
+    applyQueryParams,
+    incrementPage,
+    loadMoreBlogs,
     getPersonalBlogs,
     switchLikeBlog,
     switchLikeComment,
