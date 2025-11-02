@@ -6,12 +6,12 @@ import type {Router} from "vue-router";
 import type {PartialFormAuth, TypeAuth} from "../types";
 import type {Socket} from "socket.io-client";
 import {io} from "socket.io-client";
-import {useNotification} from "@kyvg/vue3-notification";
+import {useShowNotify} from "../composables/useNotivue.ts";
 
 const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:2001" : "/";
 
 export const useAuthStore = defineStore('authUser', () => {
-  const {notify} = useNotification();
+  const {showNotify} = useShowNotify();
 
   const authUser = ref<TypeAuth | null>(null);
   const isSigningUp = ref(false);
@@ -35,39 +35,23 @@ export const useAuthStore = defineStore('authUser', () => {
     socket.value = socketVal;
 
     socketVal.on("newBlog", (data: string) => {
-      const res = JSON.parse(data);
-
-      notify({
-        duration: 4000,
-        type: "success",
-        title: `User [${res.userId.fullName}] create new post`,
-        text: `<a href="/blogs/${res._id}">${res.title}</a>`,
-      });
+      const blog = JSON.parse(data);
+      showNotify(false, "", `${blog?.userId?.fullName} create <a class="underline" href="/blogs/${blog._id}">${blog.title}</a>`);
     });
 
     socketVal.on("newComment", (data: string) => {
       const {blog, comment} = JSON.parse(data);
 
-      if (blog.userId === authUser.value?._id) {
-        notify({
-          duration: 4000,
-          type: "success",
-          title: `User [${comment.userId.fullName}] added a comment under your post`,
-          text: `<a href="/blogs/${blog._id}">${comment.content}</a>`,
-        });
+      if (comment?.userId?.fullName && (blog.userId === authUser.value?._id)) {
+        showNotify(false, "", `${comment?.userId?.fullName} added a comment under  <a class="underline" href="/blogs/${blog._id}">${blog.title}</a>`);
       }
     });
 
     socketVal.on("newLikeBlog", (data: string) => {
       const {blog, like} = JSON.parse(data);
 
-      if (blog.userId === authUser.value?._id) {
-        notify({
-          duration: 4000,
-          type: "success",
-          title: `User [${like.userId.fullName}] liked your post`,
-          text: `<a href="/blogs/${blog._id}">${blog.title}</a>`,
-        });
+      if (like?.userId?.fullName && (blog.userId === authUser.value?._id)) {
+        showNotify(false, "", `${like?.userId?.fullName} liked  <a class="underline" href="/blogs/${blog._id}">"${blog.title}"</a>`);
       }
     });
   }
@@ -81,15 +65,6 @@ export const useAuthStore = defineStore('authUser', () => {
       const res = await getAuthCheck();
       authUser.value = res.data;
       connectSocket();
-
-      socket.value?.on('getUserData', (userId) => {
-        notify({
-          duration: 4000,
-          type: "success",
-          title: "User connected",
-          text: userId,
-        });
-      })
     } catch (error) {
       console.log(error);
       authUser.value = null;

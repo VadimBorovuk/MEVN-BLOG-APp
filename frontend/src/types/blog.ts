@@ -7,6 +7,11 @@ export type TypeQuery = {
   title?: string
 }
 
+export type TypeBadge = {
+  label: string
+  list?: TypeLike[] | TypeComment[]
+}
+
 export type TypeLike = {
   userId: TypeAuth | null
 }

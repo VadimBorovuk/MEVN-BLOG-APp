@@ -10,8 +10,8 @@
           :disabled="tag === currentQueryTag"
           class="transition bg-base-100 flex items-center px-3 py-1 w-fit rounded-xl relative cursor-pointer hover:bg-base-200 mr-3 mb-3"
       >
-        <span class="w-[8px] h-[8px] mr-[6px] rounded-full text-lg" :class="useTagColor(tag)?.class"/>
-        <span>{{ tag }}</span>
+        <span class="w-[8px] h-[8px] mr-[6px] rounded-full" :class="useTagColor(tag)?.class"/>
+        <span class="text-sm">{{ tag.toUpperCase() }}</span>
       </button>
     </div>
   </div>
@@ -38,6 +38,7 @@ const applyFetchByTag = async (tag: string) => {
   blogStore.isLoadingBlogs = true;
 
   router.push({
+    path: '/',
     query: {
       tag: tag,
     },

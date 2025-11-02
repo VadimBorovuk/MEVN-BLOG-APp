@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'
+import {onMounted, ref} from 'vue'
 import {useBlogStore} from "../stores/blogStore.ts";
 import {MoveLeft, MoveRight} from "lucide-vue-next";
 import CarouselCard from "./UI/CarouselCard.vue";
@@ -53,6 +53,14 @@ const prevSlide = () => {
     currentSlide.value = (currentSlide.value - 1 + blogStore?.blogs?.pagination?.limit) % blogStore?.blogs?.pagination?.limit;
   }
 }
+
+onMounted(()=>{
+  setInterval(()=>{
+    if (blogStore?.blogs?.pagination?.total) {
+      currentSlide.value = (currentSlide.value + 1) % blogStore?.blogs?.pagination?.limit;
+    }
+  },6000)
+})
 </script>
 
 <style scoped>

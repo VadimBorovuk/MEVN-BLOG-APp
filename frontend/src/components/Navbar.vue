@@ -13,6 +13,7 @@
             </div>
             <h1 class="text-lg font-bold">Blogify</h1>
           </router-link>
+          <SearchField/>
         </div>
 
 
@@ -105,6 +106,7 @@ import {Newspaper, LogOut, DiamondPlus} from "lucide-vue-next";
 import {useThemeStore} from "../stores/themeStore.js";
 import {onMounted} from "vue";
 import {useBlogStore} from "../stores/blogStore.ts";
+import SearchField from "./UI/SearchField.vue";
 
 
 const router = useRouter()

@@ -11,10 +11,6 @@
       <router-view />
     </div>
   </div>
-  <Notifications
-      duration="2000"
-      dangerouslySetInnerHtml
-      position="top right" />
 </template>
 
 <script setup>
@@ -22,7 +18,6 @@ import {useAuthStore} from "./stores/authStore.js";
 import { Loader } from "lucide-vue-next";
 import {useThemeStore} from "./stores/themeStore.js";
 import Navbar from "./components/Navbar.vue";
-import ScrollProgress from "./components/UI/ScrollProgress.vue";
 
 const authUserStore = useAuthStore();
 const themeStore = useThemeStore();

@@ -9,7 +9,7 @@
           class="transition bg-base-300 flex items-center px-3 py-1 w-fit rounded-xl relative cursor-pointer hover:bg-base-200"
       >
         <span class="w-[8px] h-[8px] mr-[6px] rounded-full text-lg" :class="useTagColor(slide?.tag)?.class"/>
-        <span>{{ slide?.tag }}</span>
+        <span>{{ slide?.tag.toUpperCase() }}</span>
       </div>
 
       <h2 class="text-3xl font-bold my-6 leading-10">{{ slide?.title }}</h2>

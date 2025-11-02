@@ -117,11 +117,11 @@ import {useAuthStore} from "../stores/authStore.ts";
 import ScrollProgress from "../components/UI/ScrollProgress.vue";
 import BlogSkeleton from "../components/UI/BlogSkeleton.vue";
 import {Camera, User, Mail, SquarePen} from "lucide-vue-next";
-import {useNotification} from "@kyvg/vue3-notification";
 import {onMounted} from "vue";
+import {useShowNotify} from "../composables/useNotivue.ts";
 
+const {showNotify} = useShowNotify();
 const authUserStore = useAuthStore()
-const {notify} = useNotification()
 
 const handleImageUpload = async (e: Event) => {
   const target = e.target as HTMLInputElement;
@@ -139,19 +139,10 @@ const handleImageUpload = async (e: Event) => {
 const updateProfileData = async () => {
   try {
     await authUserStore.updateProfile();
-    notify({
-      duration: 4000,
-      type: "success",
-      title: "Success",
-      text: "Update",
-    });
+    showNotify(false, "", "Profile updated");
+
   } catch (e) {
-    notify({
-      duration: 4000,
-      type: "error",
-      title: "Error",
-      text: "Update",
-    });
+    showNotify(true, "Don't updated profile", "");
   }
 }
 

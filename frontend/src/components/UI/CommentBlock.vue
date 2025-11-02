@@ -1,6 +1,6 @@
 <template>
   <div
-      class="w-full p-6 bg-base-200 rounded-2xl border border-gray-200 flex-col justify-start items-start gap-8 flex">
+      class="w-full p-6 bg-base-100 rounded-2xl flex-col justify-start items-start gap-6 flex">
     <div class="w-full flex-col justify-center items-start gap-3.5 flex">
       <div class="w-full justify-between items-center inline-flex">
         <div class="justify-start items-center gap-2.5 flex">
@@ -16,7 +16,7 @@
             </h5>
             <h6 class="text-gray-500 text-xs font-normal leading-5">
               {{
-                useDate(commentBody.createdAt!, 'DD MM YYYY H:mm')
+                useDate(commentBody.createdAt!, 'MMM D, YYYY')
               }}
             </h6>
           </div>
@@ -30,7 +30,7 @@
             <li @click="handleComment(commentBody)">
               <div class="flex items-center">
                 <SquarePen class="size-4"/>
-                <span>Edit</span>
+                <span>{{ commentBody?.is_updated ? "Hide" : "Edit" }}</span>
               </div>
             </li>
             <li @click="deleteComment">
@@ -51,7 +51,7 @@
           rows="5"
           @keypress.enter.prevent="updateComment(commentBody.content)"
           v-model="commentBody.content"
-          class="w-full py-3 px-5 rounded-lg border border-gray-300 bg-base-200 shadow-[0px_1px_2px_0px_rgba(16,_24,_40,_0.05)] focus:outline-none placeholder-gray-400 text-lg font-normal leading-relaxed"
+          class="w-full py-3 px-5 rounded-lg bg-base-300 shadow-[0px_1px_2px_0px_rgba(16,_24,_40,_0.05)] focus:outline-none placeholder-gray-400 text-lg font-normal leading-relaxed"
           placeholder="Write comments here...."/>
     </div>
     <div class="w-full justify-between items-center inline-flex">
@@ -61,22 +61,7 @@
           @click="toggleLike(blogStore.currentBlog._id, commentBody._id)"
           class="flex items-center space-x-2 text-gray-600 hover:text-pink-600 transition cursor-pointer"
       >
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            class="w-6 h-6"
-            :class="{ 'text-pink-600': 1 }"
-        >
-          <path
-              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2
-              6.5 3.5 5 5.5 5c1.54 0 3.04.99
-              3.57 2.36h1.87C13.46 5.99 14.96 5
-              16.5 5 18.5 5 20 6.5 20
-              8.5c0 3.78-3.4 6.86-8.55
-              11.54L12 21.35z"
-          />
-        </svg>
+        <ThumbsUp />
         <span>{{ commentBody?.likes?.length }}</span>
       </button>
     </div>
@@ -87,11 +72,11 @@
 import {defineProps} from "vue";
 import type {TypeBlogId, TypeComment} from "../../types";
 import {useDate} from "../../composables/useDateFormat.ts";
-import {EllipsisVertical, SquarePen, Trash2} from "lucide-vue-next";
+import {EllipsisVertical, SquarePen, Trash2, ThumbsUp} from "lucide-vue-next";
 import {useBlogStore} from "../../stores/blogStore.ts";
-import {useNotification} from "@kyvg/vue3-notification";
 import {useRoute} from "vue-router";
 import {useAuthStore} from "../../stores/authStore.ts";
+import {useShowNotify} from "../../composables/useNotivue.ts";
 
 const props = defineProps<{
   commentBody: TypeComment,
@@ -100,7 +85,7 @@ const props = defineProps<{
 const route = useRoute()
 const currentBlogId = route.params.id;
 const blogStore = useBlogStore();
-const {notify} = useNotification();
+const {showNotify} = useShowNotify();
 const authUserStore = useAuthStore();
 
 const deleteComment = async () => {
@@ -110,19 +95,10 @@ const deleteComment = async () => {
       await blogStore.getCurrentBlog(currentBlogId)
     }
 
-    notify({
-      duration: 4000,
-      type: "success",
-      title: "Success",
-      text: "delete comment",
-    });
+    showNotify(false, "", "Delete comment");
   } catch (e) {
-    notify({
-      duration: 4000,
-      type: "error",
-      title: "Error",
-      text: "delete comment",
-    });
+
+    showNotify(true, "Not delete comment", "");
   }
 }
 
@@ -132,26 +108,17 @@ const handleComment = (commentData: TypeComment) => {
 
 const updateComment = async (content: string) => {
   if (!content.length) {
-    notify({
-      duration: 4000,
-      type: "error",
-      title: "error",
-      text: "Content not be empty",
-    });
+    showNotify(true, "Content not be empty", "");
     return;
   }
+
   try {
     if (currentBlogId) {
       await blogStore.updateCurrentComment(content, currentBlogId!, props.commentBody._id)
       await blogStore.getCurrentBlog(currentBlogId!)
     }
 
-    notify({
-      duration: 4000,
-      type: "success",
-      title: "Success",
-      text: "updated comment",
-    });
+    showNotify(false, "", "Updated comment");
   } catch (e) {
     console.log(e)
   }
@@ -163,21 +130,8 @@ const toggleLike = async (blogId: TypeBlogId, commentId: string) => {
     if (currentBlogId) {
       await blogStore.getCurrentBlog(currentBlogId)
     }
-
-    notify({
-      duration: 4000,
-      type: "success",
-      title: "Success",
-      text: "Liked",
-    });
-
   } catch (e) {
-    notify({
-      duration: 4000,
-      type: "error",
-      title: "Error",
-      text: "error",
-    });
+    showNotify(true, "Not liked comment", "");
   }
 }
 

@@ -24,17 +24,24 @@
       <!-- Заголовок -->
       <div class="h-full flex flex-col justify-between">
         <div>
-          <div class="flex flex-wrap mb-3">
-            <div
-                v-if="blogData?.tag"
-                @click="applyFetchByTag(blogData?.tag)"
-                class="transition bg-base-100 text-[.875rem] mt-[0] mr-[8px] mb-[12px] ml-[0] flex items-center h-[32px] leading-[32px] px-[12px] py-[0] rounded-xl relative cursor-pointer hover:bg-base-200"
-            >
-              <span class="w-[8px] h-[8px] mr-[6px] rounded-full" :class="useTagColor(blogData?.tag)?.class"/>
-              <span>{{ blogData?.tag.toLocaleUpperCase() }}</span>
+          <div class="flex flex-wrap mb-3 items-center justify-between">
+            <div>
+              <div
+                  v-if="blogData?.tag"
+                  @click="applyFetchByTag(blogData?.tag)"
+                  class="transition bg-base-100 text-[.875rem] mt-[0] mr-[8px] mb-[12px] ml-[0] flex items-center h-[32px] leading-[32px] px-[12px] py-[0] rounded-xl relative cursor-pointer hover:bg-base-200"
+              >
+                <span class="w-[8px] h-[8px] mr-[6px] rounded-full" :class="useTagColor(blogData?.tag)?.class"/>
+                <span class="text-sm">{{ blogData?.tag.toLocaleUpperCase() }}</span>
+              </div>
+            </div>
+
+            <div class="flex items-center">
+              <BadgeUI class="mr-2" :data="{label: 'like', list: blogData?.likes}"/>
+              <BadgeUI class="" :data="{label: 'comment', list: blogData?.comments}"/>
             </div>
           </div>
-          <h3 class="relative z-10 font-medium text-3xl">
+          <h3 class="relative z-10 font-medium text-2xl cursor-pointer">
             <router-link
                 :to="`/blogs/${blogData?._id}`"
                 target="_blank"
@@ -43,7 +50,7 @@
               {{ blogData?.title }}
             </router-link>
           </h3>
-          <div class="text-gray-400 line-clamp-3 leading-6 my-4 overflow-hidden max-h-[84px] font-light"
+          <div class="text-gray-400 line-clamp-3 leading-6 my-4 overflow-hidden max-h-[84px] font-light text-md"
                v-html="blogData?.content"/>
         </div>
 
@@ -56,7 +63,7 @@
                 <div>
                   <div class="flex items-center text-sm font-semibold mb-2">
                     <User class="mr-2"/>
-                    <span class="text-lg">{{ blogData?.userId?.fullName }}</span>
+                    <span class="text-md">{{ blogData?.userId?.fullName }}</span>
                   </div>
                   <div class="flex items-center">
                     <CalendarDays class="mr-3"/>
@@ -84,11 +91,13 @@ import {useTagColor} from "../composables/useTagOfBlog.ts";
 import {useRouter, useRoute} from "vue-router";
 import {useBlogStore} from "../stores/blogStore.ts";
 import ViewReadingUI from "./UI/ViewReadingUI.vue";
+import BadgeUI from "./UI/BadgeUI.vue";
 
 defineProps<{
   blogData?: PartialTypeBlog | null
   index: number
 }>()
+
 
 const blogStore = useBlogStore();
 const router = useRouter();
@@ -105,7 +114,6 @@ const applyFetchByTag = async (tag: string) => {
       }
     })
   }
-
 }
 </script>
 

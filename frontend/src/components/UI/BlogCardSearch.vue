@@ -1,6 +1,6 @@
 <template>
   <div
-      class="grid grid-cols-3 grid-rows-1 gap-4 relative mb-6">
+      class="grid grid-cols-3 grid-rows-1 gap-4 relative max-h-20 min-h-20">
     <div class="relative z-10 rounded-lg overflow-hidden group max-h-[70px]">
       <router-link
           :to="`/blogs/${blogData?._id}`"
@@ -18,31 +18,26 @@
 
       <!-- Заголовок -->
       <div class="h-full flex flex-col justify-between">
-        <h3 class="relative z-10 font-medium text-lg leading-8">
+        <h3 class="relative z-10 font-medium text-md">
           <router-link
               :to="`/blogs/${blogData?._id}`"
               target="_blank"
-              class="relative hover:text-red-400 transition-colors duration-200 line-clamp-1 break-words"
+              class="relative hover:text-red-400 transition-colors duration-200 line-clamp-2"
           >
             {{ blogData?.title }}
           </router-link>
         </h3>
 
-        <div class="flex justify-end">
-          <ViewReadingUI :text="blogData?.content"/>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type {PartialTypeBlog} from "../types";
-import ViewReadingUI from "./UI/ViewReadingUI.vue";
+import type {PartialTypeBlog} from "../../types";
 
 defineProps<{
   blogData?: PartialTypeBlog | null
-  index: number
 }>()
 
 </script>

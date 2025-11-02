@@ -32,7 +32,8 @@ export const useBlogStore = defineStore('Blog', () => {
   const isLoadingMoreBlogs = ref<boolean>(false)
   const isLoadingCurrentBlog = ref<boolean>(false)
   const isLoadingCreatingBlog = ref<boolean>(false)
-
+  const isLoadingSearchBlog = ref<boolean>(false)
+  const searchQueryBlog = ref<string>('')
 
   const queryParams = ref<TypeQuery>({
     page: 1,
@@ -40,6 +41,7 @@ export const useBlogStore = defineStore('Blog', () => {
   })
 
   const blogs = ref<PartialIBlog>({})
+  const searchingBlogs = ref<PartialIBlog>({})
   const myPersonalBlogs = ref<PartialIBlog>({})
   const currentBlog = ref<PartialTypeBlog>({
     title: '',
@@ -69,6 +71,23 @@ export const useBlogStore = defineStore('Blog', () => {
         queryParams.value.tag = value
         queryParams.value.page = 1
         queryParams.value.limit = 10
+    }
+  }
+  const clearSearchingBlogs = () =>{
+    searchingBlogs.value = {data: []}
+  }
+
+  const fetchBlogsByTitle = async (params: TypeQuery) => {
+    isLoadingSearchBlog.value = true
+    try {
+      const res: AxiosResponse<IBlog> = await fetchBlogs(params);
+      searchingBlogs.value = res.data;
+
+    } catch (e) {
+      searchingBlogs.value = {}
+      console.log(e)
+    } finally {
+      isLoadingSearchBlog.value = false
     }
   }
 
@@ -245,6 +264,11 @@ export const useBlogStore = defineStore('Blog', () => {
     isLoadingPersonalBlogs,
     queryParams,
     isLoadingMoreBlogs,
+    searchQueryBlog,
+    searchingBlogs,
+    isLoadingSearchBlog,
+    fetchBlogsByTitle,
+    clearSearchingBlogs,
     applyQueryTag,
     applyQueryParams,
     incrementPage,

@@ -9,18 +9,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@kyvg/vue3-notification": "^3.4.1",
     "@mayasabha/ckeditor4-vue3": "^1.0.9",
     "@tailwindcss/vite": "^4.1.13",
     "axios": "^1.12.2",
     "daisyui": "^5.1.26",
     "dayjs": "^1.11.18",
+    "dompurify": "^3.3.0",
     "lucide-vue-next": "^0.544.0",
     "pinia": "^3.0.3",
     "socket.io-client": "^4.8.1",
     "tailwindcss": "^4.1.13",
     "vue": "^3.5.21",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "vue3-toastify": "^0.2.8"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",

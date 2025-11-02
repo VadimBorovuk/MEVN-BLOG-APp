@@ -5,3 +5,4 @@ declare module "*.vue" {
   export default component;
 }
 declare module '@mayasabha/ckeditor4-vue3'
+declare module 'dompurify'

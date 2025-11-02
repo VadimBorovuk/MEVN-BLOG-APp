@@ -92,8 +92,6 @@
 </template>
 
 <script setup lang="ts">
-import {useNotification} from "@kyvg/vue3-notification";
-
 import Ckeditor from "../components/Ckeditor.vue";
 import {useBlogStore} from "../stores/blogStore.js";
 import {SquarePen} from "lucide-vue-next";
@@ -103,31 +101,23 @@ import {useRoute} from "vue-router";
 import BlogCard from "../components/BlogCardOld.vue";
 import FormSkeleton from "../components/UI/FormSkeleton.vue";
 import {TAGS} from "../constants";
+import {useShowNotify} from "../composables/useNotivue.ts";
 
 const blogStore = useBlogStore();
 const route = useRoute()
 const currentBlogId = route.params.id
 
-const {notify} = useNotification()
+const {showNotify} = useShowNotify();
 
 const updateNewBlog = async () => {
   try {
     await blogStore.updateCurrentBlog(currentBlogId ?? '');
     await blogStore.getCurrentBlog(currentBlogId ?? '')
 
-    notify({
-      duration: 4000,
-      type: "success",
-      title: "Success",
-      text: "Update",
-    });
+    showNotify(false, "", "Post updated");
+
   } catch (e) {
-    notify({
-      duration: 4000,
-      type: "error",
-      title: "Error",
-      text: "Update",
-    });
+    showNotify(true, "Don't updated post", "");
   }
 }
 

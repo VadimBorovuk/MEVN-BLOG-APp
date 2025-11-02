@@ -1,11 +1,15 @@
 import {axiosInstance} from "../utils/axios.ts";
 import type {PartialTypeBlog, PickCreateBlog, TypeBlogId, TypeQuery} from "../types";
 
-export function fetchBlogs(params: TypeQuery) {
+export function fetchBlogs(params: TypeQuery = {}) {
+  const cleanedParams = Object.fromEntries(
+      Object.entries(params).filter(([_, v]) => v !== '' && v != null)
+  );
+
   return axiosInstance({
     url: `/blogs`,
     method: 'get',
-    params
+    params: cleanedParams
   })
 }
 

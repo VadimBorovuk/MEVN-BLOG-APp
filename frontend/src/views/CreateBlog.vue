@@ -93,33 +93,23 @@ import {DiamondPlus} from "lucide-vue-next";
 import Breadcrumbs from "../components/UI/Breadcrumbs.vue";
 import {useRouter} from "vue-router";
 import {onMounted, ref} from "vue";
-import {useNotification} from "@kyvg/vue3-notification";
 import BlogCard from "../components/BlogCardOld.vue";
 import {TAGS} from "../constants"
+import {useShowNotify} from "../composables/useNotivue.ts";
 
 const blogStore = useBlogStore();
 const router = useRouter();
-const {notify} = useNotification();
+const {showNotify} = useShowNotify();
 
 const formEndRef = ref<HTMLDivElement | null>(null);
 
 const createNewBlog = async () => {
   try {
     await blogStore.addBlog();
-    notify({
-      duration: 4000,
-      type: "success",
-      title: "Success",
-      text: "Create",
-    });
+    showNotify(false, "", "Post created");
     await router.push({path: '/', query: {}})
   } catch (e) {
-    notify({
-      duration: 4000,
-      type: "error",
-      title: "Error",
-      text: "error",
-    });
+    showNotify(true, "Don't create post", "");
   }
 }
 
