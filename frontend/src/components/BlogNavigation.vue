@@ -4,10 +4,9 @@
       <h3 class="text-xl font-bold">
         My posts
       </h3>
-      <router-link to="/" class="btn btn-soft btn-primary rounded-3xl">
+      <button @click="applyFetchBLogsByPersonal" class="btn btn-soft btn-primary rounded-3xl">
         <ExternalLink  />
-      </router-link>
-
+      </button>
     </div>
 
     <template v-if="blogStore.isLoadingPersonalBlogs">
@@ -44,6 +43,29 @@ import BlogShortSkeleton from "./UI/BlogShortSkeleton.vue";
 import BlogPersonalCard from "./BlogPersonalCard.vue";
 import {ExternalLink} from "lucide-vue-next";
 import BlogTags from "./BlogTags.vue";
+import {useRoute, useRouter} from "vue-router";
+import {ref, watch} from "vue";
 
+const route = useRoute();
+const router = useRouter();
 const blogStore = useBlogStore();
+const currentQueryPersonal = ref('')
+
+const applyFetchBLogsByPersonal = async () => {
+  blogStore.applyQueryParams('personal', 'true')
+  blogStore.isLoadingBlogs = true;
+
+  router.push({
+    path: '/',
+    query: {
+      personal: 'true',
+    },
+  })
+}
+
+watch(() => route.query.personal, (val) => {
+  const resTag = val as string
+  currentQueryPersonal.value = resTag
+  blogStore.applyQueryParams('personal', resTag)
+})
 </script>

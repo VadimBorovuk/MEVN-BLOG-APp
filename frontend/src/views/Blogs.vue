@@ -30,6 +30,7 @@ import BlogCarousel from "../components/BlogCarousel.vue";
 const blogStore = useBlogStore();
 const route = useRoute();
 const tagQueryName = route.query.tag;
+const tagQueryPersonal = route.query.personal;
 
 const blogsEndRef = ref<HTMLDivElement | null>(null);
 
@@ -42,14 +43,29 @@ watch(() => route.query, async (query) => {
 })
 
 onMounted(async () => {
-  if (!tagQueryName) {
+  if (!tagQueryName && !tagQueryPersonal) {
     await blogStore.getAllBlogs({page: 1, limit: 10});
   } else {
+    console.log(tagQueryName)
     if (typeof tagQueryName === 'string') {
-      blogStore.applyQueryTag('tag', tagQueryName)
+      blogStore.applyQueryParam('tag', tagQueryName)
+    }
+    if (typeof tagQueryPersonal === 'string') {
+      blogStore.applyQueryParam('personal', tagQueryPersonal)
     }
     await blogStore.getAllBlogs(blogStore.queryParams);
   }
+
+  //
+  // if (!tagQueryPersonal) {
+  //   await blogStore.getAllBlogs({page: 1, limit: 10});
+  // } else {
+  //   console.log(tagQueryPersonal)
+  //   if (typeof tagQueryPersonal === 'string') {
+  //     blogStore.applyQueryParam('personal', tagQueryPersonal)
+  //   }
+  //   await blogStore.getAllBlogs(blogStore.queryParams);
+  // }
 
   await blogStore.getPersonalBlogs({limit: 3});
 

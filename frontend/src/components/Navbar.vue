@@ -13,7 +13,8 @@
             </div>
             <h1 class="text-lg font-bold">Blogify</h1>
           </router-link>
-          <SearchField/>
+
+          <SearchField v-if="authUserStore.authUser"/>
         </div>
 
 

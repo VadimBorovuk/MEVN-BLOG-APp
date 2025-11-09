@@ -95,10 +95,10 @@ const deleteComment = async () => {
       await blogStore.getCurrentBlog(currentBlogId)
     }
 
-    showNotify(false, "", "Delete comment");
+    showNotify(false, "", "Deleted comment");
   } catch (e) {
 
-    showNotify(true, "Not delete comment", "");
+    showNotify(true, "Not deleted comment", "");
   }
 }
 

@@ -1,12 +1,23 @@
 <template>
   <div
-      class="bg-base-300 grid grid-cols-3 grid-rows-1 gap-6 relative p-6 shadow-lg transition duration-300 transform rounded-lg mb-10 min-h-[350px]">
+      class="bg-base-300 grid grid-cols-3 grid-rows-1 gap-6 relative p-6 shadow-lg transition duration-300 transform rounded-lg mb-10 min-h-[350px]"
+  >
+    <div
+        v-if="authUserStore.authUser?._id === blogData?.userId?._id"
+        title="My personal post"
+        class="absolute top-0 left-0 w-14 h-14 bg-primary text-white flex items-center justify-center rounded-tl-lg"
+        style="clip-path: polygon(0 0, 100% 0, 0 100%);">
+      <BookMarked class="absolute top-1.5 left-1.5 h-5 w-5"/><!-- Іконка всередині -->
+    </div>
+
     <div class="relative z-10 rounded-2xl overflow-hidden group">
       <img
           class="h-full rounded-2xl w-full object-cover transition-transform duration-300 transform group-hover:scale-105"
-          :src="blogData?.previewImage"
+          :src="blogData?.previewImage || '/noPreviewImage.png'"
+          :class="!blogData?.previewImage && 'opacity-40'"
           alt=""
       />
+
 
       <!-- Оверлей на ховер -->
       <router-link
@@ -19,8 +30,6 @@
     </div>
 
     <div class="col-span-2">
-
-
       <!-- Заголовок -->
       <div class="h-full flex flex-col justify-between">
         <div>
@@ -86,12 +95,13 @@
 <script setup lang="ts">
 import type {PartialTypeBlog} from "../types";
 import {useDate} from "../composables/useDateFormat.ts";
-import {ChevronsRight, User, CalendarDays} from 'lucide-vue-next';
+import {ChevronsRight, User, CalendarDays, BookMarked} from 'lucide-vue-next';
 import {useTagColor} from "../composables/useTagOfBlog.ts";
 import {useRouter, useRoute} from "vue-router";
 import {useBlogStore} from "../stores/blogStore.ts";
 import ViewReadingUI from "./UI/ViewReadingUI.vue";
 import BadgeUI from "./UI/BadgeUI.vue";
+import {useAuthStore} from "../stores/authStore.ts";
 
 defineProps<{
   blogData?: PartialTypeBlog | null
@@ -102,10 +112,11 @@ defineProps<{
 const blogStore = useBlogStore();
 const router = useRouter();
 const route = useRoute();
+const authUserStore = useAuthStore()
 
 const applyFetchByTag = async (tag: string) => {
   if (!route.query.tag) {
-    blogStore.applyQueryTag('tag', tag)
+    blogStore.applyQueryParam('tag', tag)
     blogStore.isLoadingBlogs = true;
 
     router.push({

@@ -5,37 +5,40 @@
 
     <form @submit.prevent="createNewBlog">
 
-      <fieldset class="fieldset mb-3">
-        <legend class="fieldset-legend">Blog title</legend>
-        <input
-            type="text"
-            class="input validator w-full"
-            required
-            placeholder="Enter title"
-            v-model="blogStore.blogDataCreate.title"
-            pattern=".{3,100}"
-            minlength="3"
-            maxlength="100"
-            title="Введіть від 3 до 100 символів"
-        />
-        <p class="validator-hint">
-          Must be 3 to 30 characters
-        </p>
-      </fieldset>
+      <div class="flex items-start justify-between">
+        <fieldset class="fieldset flex-1 mr-6">
+          <legend class="fieldset-legend">Blog title</legend>
+          <input
+              type="text"
+              class="input validator w-full"
+              required
+              placeholder="Enter title"
+              v-model="blogStore.blogDataCreate.title"
+              pattern=".{3,100}"
+              minlength="3"
+              maxlength="100"
+              title="Введіть від 3 до 100 символів"
+          />
+          <p class="validator-hint">
+            Must be 3 to 30 characters
+          </p>
+        </fieldset>
 
-      <fieldset class="fieldset mb-3">
-        <legend class="fieldset-legend">Tags</legend>
-        <select class="select select-primary" v-model="blogStore.blogDataCreate.tag">
-          <option disabled selected>Pick a tags</option>
-          <option
-              v-for="tag in TAGS"
-              :key="tag"
-              :value="tag"
-          >
-            {{ tag }}
-          </option>
-        </select>
-      </fieldset>
+        <fieldset class="fieldset flex-1">
+          <legend class="fieldset-legend">Tags</legend>
+          <select class="select select-primary w-full" v-model="blogStore.blogDataCreate.tag">
+            <option disabled selected>Pick a tags</option>
+            <option
+                v-for="tag in TAGS"
+                :key="tag"
+                :value="tag"
+            >
+              {{ tag }}
+            </option>
+          </select>
+        </fieldset>
+      </div>
+
 
       <fieldset class="fieldset mb-3">
         <legend class="fieldset-legend">Blog content</legend>
@@ -44,7 +47,7 @@
 
 
       <div class="flex justify-between mb-6">
-        <div class="flex flex-col flex-1">
+        <div class="flex flex-col flex-2">
           <fieldset class="fieldset mb-3">
             <legend class="fieldset-legend">Blog preview image</legend>
             <input type="file"
@@ -65,7 +68,7 @@
           </div>
         </div>
 
-        <div class="flex-1 pointer-events-none">
+        <div class="flex-3 pointer-events-none">
           <fieldset class="fieldset mb-3">
             <legend class="fieldset-legend">Preview</legend>
           </fieldset>
@@ -93,7 +96,7 @@ import {DiamondPlus} from "lucide-vue-next";
 import Breadcrumbs from "../components/UI/Breadcrumbs.vue";
 import {useRouter} from "vue-router";
 import {onMounted, ref} from "vue";
-import BlogCard from "../components/BlogCardOld.vue";
+import BlogCard from "../components/BlogCard.vue";
 import {TAGS} from "../constants"
 import {useShowNotify} from "../composables/useNotivue.ts";
 

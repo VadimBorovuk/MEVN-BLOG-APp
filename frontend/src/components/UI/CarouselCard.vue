@@ -28,7 +28,8 @@
     <div class="z-10 w-full md:w-1/2 h-full md:flex-3 rounded-2xl p-4 bg-base-300 relative overflow-hidden group">
       <img
           class="h-full rounded-sm w-full object-cover transition-transform duration-300 transform"
-          :src="slide?.previewImage"
+          :class="!slide?.previewImage && 'opacity-40'"
+          :src="slide?.previewImage || '/noPreviewImage.png'"
           alt=""
       />
 
@@ -61,7 +62,7 @@ const blogStore = useBlogStore();
 const router = useRouter();
 
 const applyFetchByTag = async (tag: string) => {
-  blogStore.applyQueryTag('tag', tag)
+  blogStore.applyQueryParam('tag', tag)
   blogStore.isLoadingBlogs = true;
 
   router.push({

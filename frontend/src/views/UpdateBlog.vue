@@ -10,48 +10,58 @@
     <template v-else>
       <form @submit.prevent="updateNewBlog">
 
-        <fieldset class="fieldset mb-3">
-          <legend class="fieldset-legend">Blog title</legend>
-          <input
-              type="text"
-              class="input validator w-full"
-              required
-              placeholder="Enter title"
-              v-model="blogStore.currentBlog.title"
-              pattern=".{3,100}"
-              minlength="3"
-              maxlength="100"
-              title="Введіть від 3 до 100 символів"
-          />
-          <p class="validator-hint">
-            Must be 3 to 30 characters
-          </p>
-        </fieldset>
+        <div class="flex items-start justify-between">
+          <fieldset class="fieldset flex-1 mr-6">
+            <legend class="fieldset-legend">Blog title</legend>
+            <input
+                type="text"
+                class="input validator w-full"
+                required
+                placeholder="Enter title"
+                v-model="blogStore.currentBlog.title"
+                pattern=".{3,100}"
+                minlength="3"
+                :disabled="isAuthor"
+                maxlength="100"
+                title="Введіть від 3 до 100 символів"
+            />
+            <p class="validator-hint">
+              Must be 3 to 30 characters
+            </p>
+          </fieldset>
 
-        <fieldset class="fieldset mb-3">
-          <legend class="fieldset-legend">Tags</legend>
-          <select class="select select-primary" v-model="blogStore.currentBlog.tag">
-            <option disabled selected>Pick a tags</option>
-            <option
-                v-for="tag in TAGS"
-                :key="tag"
-                :value="tag"
-            >
-              {{ tag }}
-            </option>
-          </select>
-        </fieldset>
+          <fieldset class="fieldset flex-1">
+            <legend class="fieldset-legend">Tags</legend>
+            <select class="select select-primary w-full"
+                    :disabled="isAuthor"
+                    v-model="blogStore.currentBlog.tag">
+              <option disabled selected>Pick a tags</option>
+              <option
+                  v-for="tag in TAGS"
+                  :key="tag"
+                  :value="tag"
+              >
+                {{ tag }}
+              </option>
+            </select>
+          </fieldset>
+        </div>
+
 
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Blog content</legend>
-          <Ckeditor v-model="contentModel" placeholder="Enter content"/>
+          <Ckeditor v-model="contentModel"
+                    :config="editorConfig"
+                    :disabled="authUserStore.authUser?._id !== blogStore.currentBlog?.userId?._id"
+                    placeholder="Enter content"/>
         </fieldset>
 
         <div class="flex justify-between mb-6">
-          <div class="flex flex-col flex-1">
+          <div class="flex flex-col flex-2">
             <fieldset class="fieldset mb-3">
               <legend class="fieldset-legend">Blog preview image</legend>
               <input type="file"
+                     :disabled="isAuthor"
                      class="file-input file-input-success"
                      accept="image/*"
                      @change="handleImageUpload"
@@ -69,7 +79,7 @@
             </div>
           </div>
 
-          <div class="flex-1 pointer-events-none">
+          <div class="flex-3 pointer-events-none">
             <fieldset class="fieldset mb-3">
               <legend class="fieldset-legend">Preview</legend>
             </fieldset>
@@ -81,7 +91,10 @@
           </div>
         </div>
 
-        <button type="submit" class="btn btn-soft btn-success flex items-center w-full">
+        <button
+            type="submit"
+            :disabled="isAuthor"
+            class="btn btn-soft btn-success flex items-center w-full">
           <SquarePen/>
           <span>Save</span>
         </button>
@@ -98,15 +111,21 @@ import {SquarePen} from "lucide-vue-next";
 import Breadcrumbs from "../components/UI/Breadcrumbs.vue";
 import {computed, onMounted} from "vue";
 import {useRoute} from "vue-router";
-import BlogCard from "../components/BlogCardOld.vue";
+import BlogCard from "../components/BlogCard.vue";
 import FormSkeleton from "../components/UI/FormSkeleton.vue";
 import {TAGS} from "../constants";
 import {useShowNotify} from "../composables/useNotivue.ts";
+import {useAuthStore} from "../stores/authStore.ts";
 
 const blogStore = useBlogStore();
 const route = useRoute()
 const currentBlogId = route.params.id
+const authUserStore = useAuthStore()
 
+const isAuthor = computed(()=>authUserStore.authUser?._id !== blogStore.currentBlog?.userId?._id)
+const editorConfig = {
+  readOnly: isAuthor.value
+}
 const {showNotify} = useShowNotify();
 
 const updateNewBlog = async () => {

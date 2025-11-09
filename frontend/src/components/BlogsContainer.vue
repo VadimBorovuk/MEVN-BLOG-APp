@@ -22,14 +22,15 @@
           Show more
         </button>
         <div v-if="blogStore.isLoadingMoreBlogs" class="w-full flex justify-center items-center">
-          <Loader class="size-10 animate-spin" />
+          <Loader class="size-10 animate-spin"/>
         </div>
 
 
       </div>
     </div>
 
-    <div v-else class="bg-base-300 relative p-6 shadow-lg transition duration-300 transform rounded-lg mb-10 min-h-[350px] flex items-center justify-center">
+    <div v-else
+         class="bg-base-300 relative p-6 shadow-lg transition duration-300 transform rounded-lg mb-10 min-h-[350px] flex items-center justify-center">
       <h2 class="text-3xl">Not founded</h2>
     </div>
 
@@ -67,6 +68,6 @@ const getMoreBlogs = async () => {
 }
 
 watch(() => route.query.tag, (val) => {
-  blogStore.applyQueryParams(val as string)
+  blogStore.applyQueryParams('tag', val as string)
 }, {immediate: true})
 </script>

@@ -4,7 +4,7 @@ import {getReceiverSocketId, io} from "../lib/socket.js";
 
 export const getBlogs = async (req, res) => {
   try {
-    const { title, tag, page = 1, limit = 10 } = req.query;
+    const { title, tag, userId, page = 1, limit = 10 } = req.query;
 
     const filter = {};
 
@@ -14,6 +14,10 @@ export const getBlogs = async (req, res) => {
 
     if (tag) {
       filter.tag = { $regex: tag, $options: "i" };
+    }
+
+    if (userId) {
+      filter.userId = userId;
     }
 
     // 🔹 Пагінація
@@ -50,45 +54,45 @@ export const getBlogs = async (req, res) => {
 };
 
 export const getPersonalBlogs = async (req, res) => {
-  try {
-    const { userId, page = 1, limit = 10 } = req.query;
-
-    const filter = {};
-
-    if (userId) {
-      filter.userId = userId;
-    }
-
-    const skip = (Number(page) - 1) * Number(limit);
-
-    // 🔹 Отримуємо загальну кількість документів для фронтенду
-    const total = await BlogModel.countDocuments(filter);
-
-    // 🔹 Основний запит
-    const blogs = await BlogModel
-        .find(filter)
-        .populate("userId", "fullName profilePic")
-        .populate("comments.userId", "fullName profilePic")
-        .populate("comments.likes.userId", "fullName profilePic")
-        .populate("likes.userId", "fullName profilePic")
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(Number(limit));
-
-    // 🔹 Відповідь із метаданими для фронтенду
-    return res.status(200).json({
-      data: blogs,
-      pagination: {
-        total,
-        page: Number(page),
-        limit: Number(limit),
-        totalPages: Math.ceil(total / limit),
-      },
-    });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Internal server error" });
-  }
+  // try {
+  //   const { userId, page = 1, limit = 10 } = req.query;
+  //
+  //   const filter = {};
+  //
+  //   if (userId) {
+  //     filter.userId = userId;
+  //   }
+  //
+  //   const skip = (Number(page) - 1) * Number(limit);
+  //
+  //   // 🔹 Отримуємо загальну кількість документів для фронтенду
+  //   const total = await BlogModel.countDocuments(filter);
+  //
+  //   // 🔹 Основний запит
+  //   const blogs = await BlogModel
+  //       .find(filter)
+  //       .populate("userId", "fullName profilePic")
+  //       .populate("comments.userId", "fullName profilePic")
+  //       .populate("comments.likes.userId", "fullName profilePic")
+  //       .populate("likes.userId", "fullName profilePic")
+  //       .sort({ createdAt: -1 })
+  //       .skip(skip)
+  //       .limit(Number(limit));
+  //
+  //   // 🔹 Відповідь із метаданими для фронтенду
+  //   return res.status(200).json({
+  //     data: blogs,
+  //     pagination: {
+  //       total,
+  //       page: Number(page),
+  //       limit: Number(limit),
+  //       totalPages: Math.ceil(total / limit),
+  //     },
+  //   });
+  // } catch (e) {
+  //   console.error(e);
+  //   res.status(500).json({ error: "Internal server error" });
+  // }
 };
 
 

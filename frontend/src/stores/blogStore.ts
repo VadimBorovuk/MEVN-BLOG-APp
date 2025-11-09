@@ -18,7 +18,6 @@ import {
   deleteCommentOfBlog,
   fetchBlogById,
   fetchBlogs,
-  fetchPersonalBlogs,
   likeBlog, likeComment,
   updateBlog, updateCommentOfBlog
 } from "../api/blogsApi.ts";
@@ -61,19 +60,23 @@ export const useBlogStore = defineStore('Blog', () => {
 
   const commentVal = ref('');
 
-  const incrementPage = () =>{
+  const incrementPage = () => {
     queryParams.value.page && queryParams.value.page++;
   }
 
-  const applyQueryTag = (key: string, value: string) =>{
+  const applyQueryParam = (key: string, value: string) => {
+    queryParams.value.page = 1
+    queryParams.value.limit = 10
     switch (key) {
       case 'tag':
         queryParams.value.tag = value
-        queryParams.value.page = 1
-        queryParams.value.limit = 10
+        return;
+      case 'personal':
+        queryParams.value.userId = authStore.authUser?._id
+        return;
     }
   }
-  const clearSearchingBlogs = () =>{
+  const clearSearchingBlogs = () => {
     searchingBlogs.value = {data: []}
   }
 
@@ -104,9 +107,25 @@ export const useBlogStore = defineStore('Blog', () => {
     }
   }
 
-  const applyQueryParams = (tag: string) =>{
-    queryParams.value = !tag ? {page: 1, limit: 10} :
-        {page: 1, limit: 10, tag}
+  const applyQueryParams = (param: string, value: string) => {
+
+    if (!param) queryParams.value = {page: 1, limit: 10}
+
+    if (param === 'tag') {
+      queryParams.value = {
+        page: 1,
+        limit: 10,
+        [param]: value,
+        userId: null
+      }
+    } else if (param === 'personal') {
+      queryParams.value = {
+        page: 1,
+        limit: 10,
+        userId: authStore.authUser?._id,
+        tag: null
+      }
+    }
 
     return queryParams.value
   }
@@ -126,7 +145,7 @@ export const useBlogStore = defineStore('Blog', () => {
 
   const getPersonalBlogs = async (params: TypeQuery) => {
     try {
-      const res: AxiosResponse<IBlog> = await fetchPersonalBlogs({...params, userId: authStore.authUser?._id});
+      const res: AxiosResponse<IBlog> = await fetchBlogs({...params, userId: authStore.authUser?._id});
       myPersonalBlogs.value = res.data;
 
     } catch (e) {
@@ -269,7 +288,7 @@ export const useBlogStore = defineStore('Blog', () => {
     isLoadingSearchBlog,
     fetchBlogsByTitle,
     clearSearchingBlogs,
-    applyQueryTag,
+    applyQueryParam,
     applyQueryParams,
     incrementPage,
     loadMoreBlogs,

@@ -34,7 +34,7 @@ const route = useRoute();
 
 const currentQueryTag = ref('')
 const applyFetchByTag = async (tag: string) => {
-  blogStore.applyQueryTag('tag', tag)
+  blogStore.applyQueryParam('tag', tag)
   blogStore.isLoadingBlogs = true;
 
   router.push({
@@ -48,7 +48,7 @@ const applyFetchByTag = async (tag: string) => {
 watch(() => route.query.tag, (val) => {
   const resTag = val as string
   currentQueryTag.value = resTag
-  blogStore.applyQueryParams(resTag)
+  blogStore.applyQueryParams('tag', resTag)
 },{ immediate: true})
 </script>
 

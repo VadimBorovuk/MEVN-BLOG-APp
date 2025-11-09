@@ -41,23 +41,27 @@ import BlogCarouselSkeleton from "./UI/BlogCarouselSkeleton.vue";
 
 const blogStore = useBlogStore();
 const currentSlide = ref(0);
+// const countBlogs = ref(0);
 
 const nextSlide = () => {
   if (blogStore?.blogs?.pagination?.total) {
-    currentSlide.value = (currentSlide.value + 1) % blogStore?.blogs?.pagination?.limit;
+    const length = blogStore?.blogs?.pagination?.total > blogStore?.blogs?.pagination?.limit ? blogStore?.blogs?.pagination?.limit : blogStore?.blogs?.pagination?.total
+    currentSlide.value = (currentSlide.value + 1) % length;
   }
 }
 
 const prevSlide = () => {
   if (blogStore?.blogs?.pagination?.total) {
-    currentSlide.value = (currentSlide.value - 1 + blogStore?.blogs?.pagination?.limit) % blogStore?.blogs?.pagination?.limit;
+    const length = blogStore?.blogs?.pagination?.total > blogStore?.blogs?.pagination?.limit ? blogStore?.blogs?.pagination?.limit : blogStore?.blogs?.pagination?.total
+    currentSlide.value = (currentSlide.value - 1 + length) % length;
   }
 }
 
 onMounted(()=>{
   setInterval(()=>{
     if (blogStore?.blogs?.pagination?.total) {
-      currentSlide.value = (currentSlide.value + 1) % blogStore?.blogs?.pagination?.limit;
+      const length = blogStore?.blogs?.pagination?.total > blogStore?.blogs?.pagination?.limit ? blogStore?.blogs?.pagination?.limit : blogStore?.blogs?.pagination?.total
+      currentSlide.value = (currentSlide.value + 1) % length;
     }
   },6000)
 })

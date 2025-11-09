@@ -8,7 +8,8 @@
       >
         <img
             class="h-full rounded-2xl w-full object-cover transition-transform duration-300 transform group-hover:scale-105"
-            :src="blogData?.previewImage"
+            :src="blogData?.previewImage || '/noPreviewImage.png'"
+            :class="!blogData?.previewImage && 'opacity-40'"
             alt=""/>
 
       </router-link>

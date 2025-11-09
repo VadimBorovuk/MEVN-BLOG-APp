@@ -3,8 +3,9 @@ import type {TypeAuth} from "./auth.ts";
 export type TypeQuery = {
   limit?: number
   page?: number
-  tag?: string
-  title?: string
+  tag?: string | null
+  title?: string | null
+  userId?: string | null
 }
 
 export type TypeBadge = {

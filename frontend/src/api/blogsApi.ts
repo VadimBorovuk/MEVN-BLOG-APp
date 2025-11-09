@@ -13,13 +13,13 @@ export function fetchBlogs(params: TypeQuery = {}) {
   })
 }
 
-export function fetchPersonalBlogs(params: {userId?: string}) {
-  return axiosInstance({
-    url: `/blogs/personal`,
-    method: 'get',
-    params
-  })
-}
+// export function fetchPersonalBlogs(params: {userId?: string}) {
+//   return axiosInstance({
+//     url: `/blogs/personal`,
+//     method: 'get',
+//     params
+//   })
+// }
 
 export function fetchBlogById(id: TypeBlogId) {
   return axiosInstance({

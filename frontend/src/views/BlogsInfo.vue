@@ -7,18 +7,27 @@
     <div class="grid grid-cols-6 grid-rows-5 gap-10">
       <div class="col-span-4 row-span-5">
         <div>
-
           <div class="min-h-screen"
-               v-if="!blogStore.isLoadingCurrentBlog && blogStore.currentBlog.previewImage">
+               v-if="!blogStore.isLoadingCurrentBlog && blogStore?.currentBlog?.title">
             <div class="rounded-2xl shadow">
               <!-- Blog image -->
               <div class="bg-base-300 rounded-2xl p-4 relative w-full flex flex-col shadow-2xl">
 
                 <img
-                    :src="blogStore.currentBlog.previewImage"
+                    :src="blogStore.currentBlog.previewImage || '/noPreviewImage.png'"
                     alt="Blog cover"
                     class="w-full h-full object-cover rounded-xl max-h-[400px]"
+                    :class="!blogStore.currentBlog.previewImage && 'opacity-40'"
                 />
+
+                <router-link
+                    title="Edit post"
+                    class="btn btn-soft btn-primary rounded-3xl absolute top-6 right-6"
+                    v-if="authUserStore.authUser?._id === blogStore?.currentBlog?.userId?._id"
+                    :to="`/update-blog/${blogStore.currentBlog?._id}`"
+                >
+                  <SquarePen class="size-5"/>
+                </router-link>
 
                 <div class="px-10 pt-10">
 
@@ -103,8 +112,9 @@ import {useShowNotify} from "../composables/useNotivue.ts";
 import Comments from "../components/UI/Comments.vue";
 import BlogNavigation from "../components/BlogNavigation.vue";
 import {useTagColor} from "../composables/useTagOfBlog.ts";
-import {CalendarDays, User, ThumbsUp} from "lucide-vue-next";
+import {CalendarDays, User, ThumbsUp, SquarePen} from "lucide-vue-next";
 import ViewReadingUI from "../components/UI/ViewReadingUI.vue";
+import {useAuthStore} from "../stores/authStore.ts";
 
 const {showNotify} = useShowNotify();
 
@@ -114,6 +124,7 @@ const route = useRoute()
 const currentBlogId = route.params.id;
 
 const blogEndRef = ref<HTMLDivElement | null>(null)
+const authUserStore = useAuthStore()
 
 const toggleLike = async (id: string) => {
   try {
