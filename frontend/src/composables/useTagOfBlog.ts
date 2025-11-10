@@ -28,25 +28,25 @@ export const useTagColor = (tagName: string) => {
     case 'news':
       res = {
         class: 'bg-blue-500',
-        url: '/newsBack.png'
+        url: '/newsBack.jpg'
       };
       return res
     case 'technology':
       res = {
         class: 'bg-yellow-500',
-        url: '/techBack.jpeg'
+        url: '/techBack.jpg'
       };
       return res
     case 'lifestyle':
       res = {
         class: 'bg-amber-500',
-        url: '/lifeBack.jpeg'
+        url: '/lifeBack.jpg'
       };
       return res
     case 'health':
       res = {
         class: 'bg-green-500',
-        url: '/healthBack.jpeg'
+        url: '/healthBack.jpg'
       };
       return res
     default:
